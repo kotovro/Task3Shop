@@ -12,8 +12,11 @@
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
-x64/
-x86/
+Task3Shop/x64/
+Task3Shop/x86/
+Task3Shop/obj/
+Task3Shop/bin/
+Task3Shop/.vs/
 [Ww][Ii][Nn]32/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
