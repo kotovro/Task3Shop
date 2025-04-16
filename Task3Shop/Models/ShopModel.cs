@@ -8,11 +8,28 @@ namespace Task3Shop.Models
 {
     class ShopModel
     {
-        Dictionary<String, int> Stock { get; set; }
+        String Name { get; }
+        String Address { get; }
 
-        ShopModel(Dictionary<String, int> stock)
+        Dictionary<GoodModel, int> Stock { get; set; }
+
+        ShopModel(Dictionary<GoodModel, int> stock, string name, string address)
         {
             Stock = stock;
+            Name = name;
+            Address = address;
+        }
+
+        public bool IsGoodAvailable(GoodModel good)
+        {
+            return Stock.TryGetValue(good, out int quantity) && quantity > 0;
+        }
+        public void SellGood(GoodModel good)
+        {
+            if (Stock.ContainsKey(good) && Stock[good] > 0)
+            {
+                Stock[good]--;
+            }
         }
     }
 }
