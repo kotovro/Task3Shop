@@ -13,6 +13,11 @@ namespace Task3Shop.Models
 
         public Dictionary<GoodModel, int> Stock { get; set; }
 
+        public ShopModel(string name, string address)
+        {
+            Name = name;
+            Address = address;
+        }
         public ShopModel(Dictionary<GoodModel, int> stock, string name, string address)
         {
             Stock = stock;

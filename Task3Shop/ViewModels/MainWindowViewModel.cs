@@ -14,6 +14,7 @@ namespace Task3Shop.ViewModels
     public partial class MainWindowViewModel : ViewModelBase
     {
         public ObservableCollection<GoodModel>? GlobalGoods { get; } = new();
+        public ObservableCollection<ShopModel>? GlobalShops { get; } = new();
 
         private readonly Window _mainWindow;
         public ObservableCollection<ShopViewModel> Shops { get; } = new();
@@ -25,50 +26,19 @@ namespace Task3Shop.ViewModels
 
             await addGoodWindow.ShowDialog(_mainWindow);
         }
-        
+        public async void AddShop()
+        {
+            var addShopWindow = new AddShopWindow();
+            var shopFormVM = new AddShopViewModel(_mainWindow, addShopWindow);
+            addShopWindow.DataContext = shopFormVM;
+
+            await addShopWindow.ShowDialog(_mainWindow);
+        }
+
 
         public MainWindowViewModel(Window mainWindow)
         {
             _mainWindow = mainWindow;
-            //AddShopCommand = ReactiveCommand.CreateFromTask(async () =>
-            //{
-            //    //var shopFormVM = new ShopViewModel(_allGoods.AllGoods);
-            //    //var shopFormView = new ShopView { DataContext = shopFormVM };
-
-            //    //var shopModel = await shopFormView.ShowDialog<ShopModel>(
-            //    //    (App.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow
-            //    //);
-
-            //    //if (shopModel != null)
-            //    //{
-            //    //    //var shopVM = new ShopViewModel(
-            //    //    //    initialStock: shopModel.Stock.Select(kv => new GoodEntryViewModel
-            //    //    //    (
-            //    //    //        kv.Key,
-            //    //    //        kv.Value
-            //    //    //    )));
-
-            //    //    //Shops.Add(shopVM);
-            //    //}
-            //});
-
-            //AddGoodCommand = ReactiveCommand.CreateFromTask(async () =>
-            //{
-            //    var goodFormVM = new AddGoodViewModel();
-            //    var goodFormView = new AddGoodWindow
-            //    {
-            //        DataContext = goodFormVM
-            //    };
-
-            //    var result = await goodFormView.ShowDialog<GoodModel>(
-            //        (App.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow
-            //    );
-
-            //    if (result != null)
-            //    {
-            //        _allGoods.AllGoods.Add(result);
-            //    }
-            //});
         }
         
         public string Greeting { get; } = "Welcome to Avalonia!";

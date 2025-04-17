@@ -11,10 +11,10 @@ using Task3Shop.Models;
 
 namespace Task3Shop.ViewModels
 {
-    public class AddGoodViewModel : ViewModelBase
+    public class AddGoodViewModel(Window mainWindow, Window thisWindow) : ViewModelBase
     {
-        private Window _mainWindow;
-        private Window _thisWindow;
+        private Window _mainWindow = mainWindow;
+        private Window _thisWindow = thisWindow;
 
 
          private string _goodName;
@@ -49,18 +49,6 @@ namespace Task3Shop.ViewModels
               mainWindowViewModel.GlobalGoods.Add(new GoodModel(GoodName));
                 _thisWindow.Close();
             }
-        }
-
-        public AddGoodViewModel(Window mainWindow, Window thisWindow)
-        {
-            _mainWindow = mainWindow;
-            _thisWindow = thisWindow;
-            //var canConfirm = this.WhenAnyValue(vm => vm.GoodName, name => !string.IsNullOrWhiteSpace(name));
-            
-            var good = new GoodModel(GoodName);
-            
-
-           
         }
     }
 }
