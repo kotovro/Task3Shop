@@ -8,6 +8,6 @@ namespace Task3Shop.Models
 {
     interface IOutOfStockClientStrategy
     {
-        public void MakeOrder(String itemName, List<ShopModel> shopsList);
+        public void HandleOutOfStock(GoodModel good, List<ShopModel> shopsList);
     }
 }

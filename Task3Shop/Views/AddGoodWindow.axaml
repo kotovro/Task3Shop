@@ -1,0 +1,12 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="https://github.com/avaloniaui"
+        xmlns:vm="using:Task3Shop.ViewModels"
+		x:Class="Task3Shop.Views.AddGoodWindow"
+        x:DataType="vm:AddGoodViewModel"
+		Title="Add Good" Width="300" Height="150">
+	<StackPanel Margin="10">
+		<TextBox Watermark="Enter product name" Text="{Binding GoodName}" />
+		<Button Content="Add" Command="{Binding Confirm}" IsEnabled="{Binding CanConfirm}" Margin="0,10,0,0"/>
+	</StackPanel>
+</Window>

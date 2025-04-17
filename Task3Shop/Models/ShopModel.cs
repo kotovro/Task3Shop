@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Task3Shop.Models
 {
-    class ShopModel
+    public class ShopModel
     {
-        String Name { get; }
-        String Address { get; }
+        public String Name { get; } = string.Empty;
+        public String Address { get; } = string.Empty;
 
-        Dictionary<GoodModel, int> Stock { get; set; }
+        public Dictionary<GoodModel, int> Stock { get; set; }
 
-        ShopModel(Dictionary<GoodModel, int> stock, string name, string address)
+        public ShopModel(Dictionary<GoodModel, int> stock, string name, string address)
         {
             Stock = stock;
             Name = name;
