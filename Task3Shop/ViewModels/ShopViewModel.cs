@@ -14,27 +14,15 @@ namespace Task3Shop.ViewModels
     {
         public string Name { get; set; }
         public string Address { get; set; }
-
-        public ObservableCollection<GoodEntryViewModel> Stock { get; }
+        public ObservableCollection<StockItem> Stock { get; set; }
 
         public ReactiveCommand<Unit, ShopModel> ConfirmCommand { get; }
 
-        public ShopViewModel(
-            IEnumerable<GoodEntryViewModel> initialStock)
+        public ShopViewModel(ShopModel shopModel)
         {
-            Stock = new ObservableCollection<GoodEntryViewModel>(initialStock);
-
-            
-
-            ConfirmCommand = ReactiveCommand.Create(() =>
-            {
-                var model = new ShopModel
-                (
-                    Name,
-                    Address
-                );
-                return model;
-            });
+            Name = shopModel.Name;
+            Address = shopModel.Address;
+            Stock = new ObservableCollection<StockItem>(shopModel.Stock);
         }
     }
 
