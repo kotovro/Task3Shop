@@ -11,29 +11,26 @@ namespace Task3Shop.Models
         public String Name { get; } = string.Empty;
         public String Address { get; } = string.Empty;
 
-        public Dictionary<GoodModel, int> Stock { get; set; }
+        public List<StockItem> Stock { get; set; }
 
         public ShopModel(string name, string address)
         {
             Name = name;
             Address = address;
         }
-        public ShopModel(Dictionary<GoodModel, int> stock, string name, string address)
-        {
-            Stock = stock;
-            Name = name;
-            Address = address;
-        }
+        
 
         public bool IsGoodAvailable(GoodModel good)
         {
-            return Stock.TryGetValue(good, out int quantity) && quantity > 0;
+            return Stock.Any(item => item.Good.Equals(good) && item.Quantity > 0);
         }
         public void SellGood(GoodModel good)
         {
-            if (Stock.ContainsKey(good) && Stock[good] > 0)
+            var item = Stock.FirstOrDefault(i => i.Good.Equals(good));
+
+            if (item != null && item.Quantity > 0)
             {
-                Stock[good]--;
+                item.Quantity--;
             }
         }
     }

@@ -24,11 +24,12 @@ namespace Task3Shop.ViewModels
         {
             Stock = new ObservableCollection<GoodEntryViewModel>(initialStock);
 
+            
+
             ConfirmCommand = ReactiveCommand.Create(() =>
             {
                 var model = new ShopModel
                 (
-                    Stock.ToDictionary(x => x.GoodModel, x => x.Quantity),
                     Name,
                     Address
                 );
@@ -36,4 +37,6 @@ namespace Task3Shop.ViewModels
             });
         }
     }
+
+   
 }

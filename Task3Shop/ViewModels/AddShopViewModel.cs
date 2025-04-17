@@ -60,9 +60,25 @@ namespace Task3Shop.ViewModels
             if (CanConfirm)
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
-                mainWindowViewModel.GlobalShopsModels.Add(new ShopModel(ShopName, ShopAddress));
+                ShopModel temp = new ShopModel(ShopName, ShopAddress);
+                FillStock(temp);
+                mainWindowViewModel.GlobalShopsModels.Add(temp);
                 _thisWindow.Close();
             }
+        }
+
+        public void FillStock(ShopModel shopModel)
+        {
+
+            var stock = new List<StockItem>();
+
+            var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
+            foreach (var good in mainWindowViewModel.GlobalGoodsModels)
+            {
+                stock.Add(new StockItem(good, 10));
+            }
+
+            shopModel.Stock = stock;
         }
     }
 }
