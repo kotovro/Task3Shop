@@ -18,9 +18,6 @@ namespace Task3Shop.ViewModels
         public ObservableCollection<CustomerModel>? GlobalCustomerModels { get; } = new();
         public ObservableCollection<CustomerModel>? GlobalDeliveryServiceModels { get; } = new();
 
-
-        public ObservableCollection<ShopViewModel> Shops { get; } = new();
-
         private readonly Window _mainWindow;
         public  async void AddGood()
         {
