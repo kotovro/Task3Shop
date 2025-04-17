@@ -25,7 +25,7 @@ namespace Task3Shop.ViewModels
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
                 return !string.IsNullOrWhiteSpace(GoodName) &&
-                       !(mainWindowViewModel?.GlobalGoods?.Any(good =>
+                       !(mainWindowViewModel?.GlobalGoodsModels?.Any(good =>
                            good.Name.Equals(GoodName, StringComparison.OrdinalIgnoreCase)) ?? false);
             }
         }
@@ -46,7 +46,7 @@ namespace Task3Shop.ViewModels
         if (CanConfirm) // Or canConfirm() if it's a method
             { 
               var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel; 
-              mainWindowViewModel.GlobalGoods.Add(new GoodModel(GoodName));
+              mainWindowViewModel.GlobalGoodsModels.Add(new GoodModel(GoodName));
                 _thisWindow.Close();
             }
         }

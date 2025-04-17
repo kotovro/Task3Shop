@@ -10,7 +10,7 @@ using Task3Shop.Views;
 
 namespace Task3Shop.ViewModels
 {
-    class AddShopViewModel(Window mainWindow, Window thisWindow) : ViewModelBase
+    public class AddShopViewModel(Window mainWindow, Window thisWindow) : ViewModelBase
     {
         private Window _mainWindow = mainWindow;
         private Window _thisWindow = thisWindow;
@@ -24,11 +24,11 @@ namespace Task3Shop.ViewModels
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
                 var isNameValid = !string.IsNullOrWhiteSpace(ShopName) &&
-                       !(mainWindowViewModel?.GlobalShops?.Any(shop =>
-                           shop.Name.Equals(ShopName, StringComparison.OrdinalIgnoreCase)) ?? false);
+                       (mainWindowViewModel?.GlobalShopsModels?.Any(shop =>
+                           shop.Name.Equals(ShopName, StringComparison.OrdinalIgnoreCase)) == false);
                 var isAddressValid = !string.IsNullOrWhiteSpace(ShopAddress) &&
-                       !(mainWindowViewModel?.GlobalShops?.Any(shop =>
-                           shop.Address.Equals(ShopAddress, StringComparison.OrdinalIgnoreCase)) ?? false);
+                       (mainWindowViewModel?.GlobalShopsModels?.Any(shop =>
+                           shop.Address.Equals(ShopAddress, StringComparison.OrdinalIgnoreCase)) == false);
                 
                 return isAddressValid && isNameValid;
                
@@ -57,10 +57,10 @@ namespace Task3Shop.ViewModels
 
         public void Confirm()
         {
-            if (CanConfirm) // Or canConfirm() if it's a method
+            if (CanConfirm)
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
-                //mainWindowViewModel.GlobalGoods.Add(new GoodModel(GoodName));
+                mainWindowViewModel.GlobalShopsModels.Add(new ShopModel(ShopName, ShopAddress));
                 _thisWindow.Close();
             }
         }

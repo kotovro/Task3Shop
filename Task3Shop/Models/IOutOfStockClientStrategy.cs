@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Task3Shop.Models
 {
-    interface IOutOfStockClientStrategy
+    public interface IOutOfStockClientStrategy
     {
         public void HandleOutOfStock(GoodModel good, List<ShopModel> shopsList);
     }

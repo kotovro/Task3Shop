@@ -6,16 +6,22 @@ using System.Threading.Tasks;
 
 namespace Task3Shop.Models
 {
-    class CustomerModel //add here reaction for out of stcok
+    public class CustomerModel //add here reaction for out of stcok
     {
         List<OrderModel> orders = new List<OrderModel>();
-        String Address { get;  }
-        String Name { get;  }
+        public String Address { get;  }
+        public String Name { get;  }
 
-        IOutOfStockClientStrategy clientStrategy;
-        CustomerModel(IOutOfStockClientStrategy strategy)
+        IOutOfStockClientStrategy clientStrategy { get; set;  }
+        public CustomerModel(IOutOfStockClientStrategy strategy)
         {
             clientStrategy = strategy;
+        }
+
+        public CustomerModel(string Name, string Address)
+        {
+            this.Name = Name;
+            this.Address = Address;
         }
     }
 }

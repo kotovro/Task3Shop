@@ -13,11 +13,15 @@ namespace Task3Shop.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
-        public ObservableCollection<GoodModel>? GlobalGoods { get; } = new();
-        public ObservableCollection<ShopModel>? GlobalShops { get; } = new();
+        public ObservableCollection<GoodModel>? GlobalGoodsModels { get; } = new();
+        public ObservableCollection<ShopModel>? GlobalShopsModels { get; } = new();
+        public ObservableCollection<CustomerModel>? GlobalCustomerModels { get; } = new();
+        public ObservableCollection<CustomerModel>? GlobalDeliveryServiceModels { get; } = new();
+
+
+        public ObservableCollection<ShopViewModel> Shops { get; } = new();
 
         private readonly Window _mainWindow;
-        public ObservableCollection<ShopViewModel> Shops { get; } = new();
         public  async void AddGood()
         {
             var addGoodWindow = new AddGoodWindow();
@@ -35,6 +39,23 @@ namespace Task3Shop.ViewModels
             await addShopWindow.ShowDialog(_mainWindow);
         }
 
+        public async void AddCustomer()
+        {
+            var addCustomerWindow = new AddCustomerWindow();
+            var customerFormVM = new AddCustomerViewModel(_mainWindow, addCustomerWindow);
+            addCustomerWindow.DataContext = customerFormVM;
+
+            await addCustomerWindow.ShowDialog(_mainWindow);
+        }
+
+        public async void AddDeliveryService()
+        {
+            var addDeliveryServiceWindow = new AddDeliveryServiceWindow();
+            var deliveryFormVM = new AddDeliveryServiceViewModel(_mainWindow, addDeliveryServiceWindow);
+            addDeliveryServiceWindow.DataContext = deliveryFormVM;
+
+            await addDeliveryServiceWindow.ShowDialog(_mainWindow);
+        }
 
         public MainWindowViewModel(Window mainWindow)
         {
