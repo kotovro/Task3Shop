@@ -67,7 +67,7 @@ namespace Task3Shop.ViewModels
             }
         }
 
-        public void FillStock(Shop shopModel)
+        public void FillStock(Shop shop)
         {
 
             var stock = new Dictionary<Good, int>();
@@ -78,7 +78,12 @@ namespace Task3Shop.ViewModels
                 stock.Add(good, 10);
             }
 
-            shopModel.Stock = stock;
+            foreach (Customer customer in mainWindowViewModel.GlobalCustomers)
+            {
+                customer.OnMakeOrder += shop.MakeOrderListener;
+            }
+
+            shop.Stock = stock;
         }
     }
 }
