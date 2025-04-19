@@ -23,10 +23,10 @@ namespace Task3Shop.ViewModels
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
                 var isNameValid = !string.IsNullOrWhiteSpace(CustomerName) &&
-                       !(mainWindowViewModel?.GlobalCustomerModels?.Any(customer =>
+                       !(mainWindowViewModel?.GlobalCustomers?.Any(customer =>
                            customer.Name.Equals(CustomerName, StringComparison.OrdinalIgnoreCase)) ?? false);
                 var isAddressValid = !string.IsNullOrWhiteSpace(CustomerAddress) &&
-                       !(mainWindowViewModel?.GlobalCustomerModels?.Any(customer =>
+                       !(mainWindowViewModel?.GlobalCustomers?.Any(customer =>
                            customer.Address.Equals(CustomerAddress, StringComparison.OrdinalIgnoreCase)) ?? false);
 
                 return isAddressValid && isNameValid;
@@ -59,7 +59,15 @@ namespace Task3Shop.ViewModels
             if (CanConfirm)
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
-                mainWindowViewModel.GlobalCustomerModels.Add(new CustomerModel(CustomerName, CustomerAddress));
+                var random = new Random();
+                var strategy = mainWindowViewModel.OutOfStockClientStrategies.ElementAt(random.Next(mainWindowViewModel.OutOfStockClientStrategies.Count));
+                var customer = new Customer(CustomerName, CustomerAddress, strategy, mainWindowViewModel.GlobalShops);
+                mainWindowViewModel.GlobalCustomers.Add(customer);
+                
+                foreach (Shop shop in mainWindowViewModel.GlobalShops)
+                {
+                    customer.OnMakeOrder += shop.MakeOrderListener;
+                }
                 _thisWindow.Close();
             }
         }

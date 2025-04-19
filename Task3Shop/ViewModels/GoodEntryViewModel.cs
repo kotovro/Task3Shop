@@ -10,7 +10,7 @@ namespace Task3Shop.ViewModels
 {
     public class GoodEntryViewModel : ViewModelBase
     {
-        public GoodModel GoodModel { get; set; } = new();
+        public Good GoodModel { get; set; } = new();
 
         private int _quantity;
         public int Quantity
@@ -21,7 +21,7 @@ namespace Task3Shop.ViewModels
 
         public GoodEntryViewModel(String name, int quantity)
         {
-            GoodModel = new GoodModel(name);
+            GoodModel = new Good(name);
             Quantity = quantity;
         }
     }

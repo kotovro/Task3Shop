@@ -8,15 +8,28 @@ using System.Threading.Tasks;
 using Task3Shop.Models;
 using Task3Shop.Views;
 using System.Windows.Input;
+using Avalonia.Media.Imaging;
+using SkiaSharp;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Task3Shop.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
-        public ObservableCollection<GoodModel>? GlobalGoodsModels { get; } = new();
-        public ObservableCollection<ShopModel>? GlobalShopsModels { get; } = new();
-        public ObservableCollection<CustomerModel>? GlobalCustomerModels { get; } = new();
-        public ObservableCollection<CustomerModel>? GlobalDeliveryServiceModels { get; } = new();
+
+        public List<IOutOfStockClientStrategy> OutOfStockClientStrategies = [
+            new DontBuyAnythingStrategy(),
+            new MakeNewOrderAnywhereStrategy(),
+            new MakeNewOrderHereStrategy()
+        ]; 
+        private Image _image;
+        private double _x = 0;
+        public SynchronizedCollection<Good>? GlobalGoods { get; } = new();
+        public SynchronizedCollection<Shop>? GlobalShops { get; } = new();
+        public SynchronizedCollection<Customer>? GlobalCustomers { get; } = new();
+        public SynchronizedCollection<DeliveryService>? GlobalDeliveryServiceModels { get; } = new();
 
         private readonly Window _mainWindow;
         public  async void AddGood()
@@ -57,8 +70,37 @@ namespace Task3Shop.ViewModels
         public MainWindowViewModel(Window mainWindow)
         {
             _mainWindow = mainWindow;
+            
+            //_image = new Image
+            //{
+            //    Source = new Bitmap("avares://YourAppName/Assets/myimage.png"),
+            //    Width = 100,
+            //    Height = 100
+            //};
+
+            //Canvas.SetLeft(_image, _x);
+            //Canvas.SetTop(_image, 50);
+            //myCanvas.Children.Add(_image); // Assuming x:Name="myCanvas"
+
+            //// Subscribe to frame rendering
+            //CompositionTarget.Rendering += OnFrame;
+
         }
-        
+
+        private void OnFrame(object sender, EventArgs e)
+        {
+            //_x += 2; // Move to the right
+            //Canvas.SetLeft(_image, _x);
+
+            //// Stop after moving off-screen
+            //if (_x > Bounds.Width)
+            //{
+            //    CompositionTarget.Rendering -= OnFrame;
+            //}
+        }
+
         public string Greeting { get; } = "Welcome to Avalonia!";
     }
+
+
 }

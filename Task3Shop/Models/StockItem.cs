@@ -9,10 +9,10 @@ namespace Task3Shop.Models
 {
     public class StockItem
     {
-        public GoodModel Good { get; }
+        public Good Good { get; }
         public int Quantity { get; set; }
 
-        public StockItem(GoodModel good, int quality)
+        public StockItem(Good good, int quality)
         {
             Good = good;
             Quantity = quality;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace Task3Shop.Models
 {
     public interface IOutOfStockClientStrategy
     {
-        public void HandleOutOfStock(GoodModel good, List<ShopModel> shopsList);
+        public (Good, Shop?) HandleOutOfStock(Order order, SynchronizedCollection<Shop> shopsList);
     }
 }

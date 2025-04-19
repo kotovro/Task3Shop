@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace Task3Shop.Models
 {
-    public class GoodModel
+    public class Good
     {
         public String Name { get; }
         
-        public GoodModel(String name)
+        public Good(String name)
         {
             Name = name;
         }
 
-        public GoodModel()
+        public Good()
         {
         }
     }

@@ -2,6 +2,7 @@
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace Task3Shop.ViewModels
         private Window _thisWindow = thisWindow;
 
         private string _deliveyServiceName;
-        private string _deliveryServiceAddress;
+        private int _totalCars;
 
         public bool CanConfirm
         {
@@ -25,12 +26,10 @@ namespace Task3Shop.ViewModels
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
                 var isNameValid = !string.IsNullOrWhiteSpace(DeliveryServiceName) &&
                        !(mainWindowViewModel?.GlobalDeliveryServiceModels?.Any(deliveryService =>
-                           deliveryService.Name.Equals(DeliveryServiceName, StringComparison.OrdinalIgnoreCase)) ?? false);
-                var isAddressValid = !string.IsNullOrWhiteSpace(DeliveryServiceAddress) &&
-                       !(mainWindowViewModel?.GlobalDeliveryServiceModels?.Any(deliveryService =>
-                           deliveryService.Address.Equals(DeliveryServiceAddress, StringComparison.OrdinalIgnoreCase)) ?? false);
+                           deliveryService.ServiceName.Equals(DeliveryServiceName, StringComparison.OrdinalIgnoreCase)) ?? false);
 
-                return isAddressValid && isNameValid;
+
+                return isNameValid;
 
             }
         }
@@ -45,12 +44,13 @@ namespace Task3Shop.ViewModels
             }
         }
 
-        public string DeliveryServiceAddress
+        [Required]
+        public int TotalCars
         {
-            get => _deliveryServiceAddress;
+            get => _totalCars;
             set
             {
-                this.RaiseAndSetIfChanged(ref _deliveryServiceAddress, value);
+                this.RaiseAndSetIfChanged(ref _totalCars, value);
                 this.RaisePropertyChanged(nameof(CanConfirm));
             }
         }
@@ -60,7 +60,7 @@ namespace Task3Shop.ViewModels
             if (CanConfirm)
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
-                mainWindowViewModel.GlobalDeliveryServiceModels.Add(new CustomerModel(DeliveryServiceName, DeliveryServiceAddress));
+                mainWindowViewModel.GlobalDeliveryServiceModels.Add(new DeliveryService(TotalCars, DeliveryServiceName));
                 _thisWindow.Close();
             }
         }

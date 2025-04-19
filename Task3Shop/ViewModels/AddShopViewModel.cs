@@ -24,10 +24,10 @@ namespace Task3Shop.ViewModels
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
                 var isNameValid = !string.IsNullOrWhiteSpace(ShopName) &&
-                       (mainWindowViewModel?.GlobalShopsModels?.Any(shop =>
+                       (mainWindowViewModel?.GlobalShops?.Any(shop =>
                            shop.Name.Equals(ShopName, StringComparison.OrdinalIgnoreCase)) == false);
                 var isAddressValid = !string.IsNullOrWhiteSpace(ShopAddress) &&
-                       (mainWindowViewModel?.GlobalShopsModels?.Any(shop =>
+                       (mainWindowViewModel?.GlobalShops?.Any(shop =>
                            shop.Address.Equals(ShopAddress, StringComparison.OrdinalIgnoreCase)) == false);
                 
                 return isAddressValid && isNameValid;
@@ -60,22 +60,22 @@ namespace Task3Shop.ViewModels
             if (CanConfirm)
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
-                ShopModel temp = new ShopModel(ShopName, ShopAddress);
+                Shop temp = new Shop(ShopName, ShopAddress);
                 FillStock(temp);
-                mainWindowViewModel.GlobalShopsModels.Add(temp);
+                mainWindowViewModel.GlobalShops.Add(temp);
                 _thisWindow.Close();
             }
         }
 
-        public void FillStock(ShopModel shopModel)
+        public void FillStock(Shop shopModel)
         {
 
-            var stock = new List<StockItem>();
+            var stock = new Dictionary<Good, int>();
 
             var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
-            foreach (var good in mainWindowViewModel.GlobalGoodsModels)
+            foreach (var good in mainWindowViewModel.GlobalGoods)
             {
-                stock.Add(new StockItem(good, 10));
+                stock.Add(good, 10);
             }
 
             shopModel.Stock = stock;

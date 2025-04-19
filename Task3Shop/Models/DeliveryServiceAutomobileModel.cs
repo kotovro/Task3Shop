@@ -9,8 +9,9 @@ namespace Task3Shop.Models
     class DeliveryServiceAutomobileModel
     {
         int Speed { get;  }
-        OrderModel order { get;  }
-        DeliveryServiceAutomobileModel(int speed, OrderModel order)
+        Order order { get;  }
+        DeliveryServiceAutomobileModel(int speed, Order
+            order)
         {
             Speed = speed;
             this.order = order;
