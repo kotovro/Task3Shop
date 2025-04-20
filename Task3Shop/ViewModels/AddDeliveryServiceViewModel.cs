@@ -26,7 +26,7 @@ namespace Task3Shop.ViewModels
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
                 var isNameValid = !string.IsNullOrWhiteSpace(DeliveryServiceName) &&
-                       !(mainWindowViewModel?.GlobalDeliveryServiceModels?.Any(deliveryService =>
+                       !(mainWindowViewModel?.GlobalDeliveryServices?.Any(deliveryService =>
                            deliveryService.ServiceName.Equals(DeliveryServiceName, StringComparison.OrdinalIgnoreCase)) ?? false);
 
 
@@ -62,8 +62,9 @@ namespace Task3Shop.ViewModels
             if (CanConfirm)
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
-                mainWindowViewModel.GlobalDeliveryServiceModels.Add(new DeliveryService(TotalCars, DeliveryServiceName));
+                mainWindowViewModel.GlobalDeliveryServices.Add(new DeliveryService(TotalCars, DeliveryServiceName));
                 _thisWindow.Close();
+                mainWindowViewModel.RedrawCanvas();
             }
         }
     }

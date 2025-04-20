@@ -69,6 +69,7 @@ namespace Task3Shop.ViewModels
                     customer.OnMakeOrder += shop.MakeOrderListener;
                 }
                 _thisWindow.Close();
+                mainWindowViewModel.RedrawCanvas();
             }
         }
     }

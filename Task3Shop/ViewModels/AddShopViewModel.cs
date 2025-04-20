@@ -64,6 +64,7 @@ namespace Task3Shop.ViewModels
                 FillStock(temp);
                 mainWindowViewModel.GlobalShops.Add(temp);
                 _thisWindow.Close();
+                mainWindowViewModel.RedrawCanvas();
             }
         }
 

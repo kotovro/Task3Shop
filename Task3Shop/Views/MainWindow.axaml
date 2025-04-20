@@ -7,19 +7,29 @@
         x:Class="Task3Shop.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
+		Width="800" 
+		Height="450"
         Title="Task3Shop">
 
-
-    <Grid ColumnDefinitions="250, Auto">
-		<StackPanel Grid.Column="0">
-		    <Button Content="Add product" Command="{Binding AddGood}" Margin="0,10,0,0" />
-			<Button Content="Add shop" Command="{Binding AddShop}" Margin="0,10,0,0"/>
-			<Button Content="Add customer" Command="{Binding AddShop}" Margin="0,10,0,0"/>
-			<Button Content="Add delivery service" Command="{Binding AddDeliveryService}" Margin="0,10,0,0"/>
-        </StackPanel>
-		
-		<Canvas Grid.Column="1">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="1*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<Canvas
+				x:Name="Canvas"
+				Grid.Row="0"
+				Background="Cornsilk">
+			<!--Path Fill="Orange" Data="M36.8 192l566.3 0c20.3 0 36.8-16.5 36.8-36.8c0-7.3-2.2-14.4-6.2-20.4L558.2 21.4C549.3 8 534.4 0 518.3 0L121.7 0c-16 0-31 8-39.9 21.4L6.2 134.7c-4 6.1-6.2 13.2-6.2 20.4C0 175.5 16.5 192 36.8 192zM64 224l0 160 0 80c0 26.5 21.5 48 48 48l224 0c26.5 0 48-21.5 48-48l0-80 0-160-64 0 0 160-192 0 0-160-64 0zm448 0l0 256c0 17.7 14.3 32 32 32s32-14.3 32-32l0-256-64 0z" Canvas.Left="30" Canvas.Top="50"/-->
 		</Canvas>
+
+		<!--Place buttons in line, and not in column!-->
+		<StackPanel Orientation="Horizontal" Grid.Row="1">
+			<Button Content="Add product" Command="{Binding AddGood}" Margin="10,10,10,10" />
+			<Button Content="Add shop" Command="{Binding AddShop}" Margin="10,10,10,10" />
+			<Button Content="Add customer" Command="{Binding AddCustomer}" Margin="10,10,10,10"/>
+			<Button Content="Add delivery service" Command="{Binding AddDeliveryService}" Margin="10,10,10,10"/>
+		</StackPanel>
 		<!--TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/-->
-    </Grid>
+	</Grid>
 </Window>
