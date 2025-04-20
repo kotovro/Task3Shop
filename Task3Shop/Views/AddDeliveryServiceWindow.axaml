@@ -2,15 +2,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="250"
+		Width="400"
+		MaxWidth="400"
+		MaxHeight="250"
         xmlns:vm="using:Task3Shop.ViewModels"
 		x:Class="Task3Shop.Views.AddDeliveryServiceWindow"
         x:DataType="vm:AddDeliveryServiceViewModel"
         Title="AddDeliveryServiceWindow">
-	<StackPanel Margin="10">
-		<TextBox Watermark="Enter delivery service name" Text="{Binding DeliveryServiceName}" />
-		<TextBox Watermark="Enter total cars count" Text="{Binding TotalCars}" />
+	<StackPanel DataContext="{Binding addDeliveryServiceViewModel}" Margin="10">
+		<TextBox Watermark="Enter delivery service name"  Margin="0,10,0,0" Text="{Binding DeliveryServiceName}" />
+		<TextBox Watermark="Enter total cars count"  Margin="0,10,0,0" Text="{Binding TotalCars}" />
 
-		<Button Content="Add" Command="{Binding Confirm}" IsEnabled="{Binding CanConfirm}" Margin="0,10,0,0"/>
+		<Button Content="Add" Command="{Binding Confirm}" IsEnabled="{Binding CanConfirm}" Margin="0,10,0,0" HorizontalAlignment="Right"/>
 	</StackPanel>
 </Window>

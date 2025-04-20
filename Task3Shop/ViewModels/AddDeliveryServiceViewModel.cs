@@ -19,6 +19,7 @@ namespace Task3Shop.ViewModels
         private string _deliveyServiceName;
         private int _totalCars;
 
+        
         public bool CanConfirm
         {
             get
@@ -34,6 +35,7 @@ namespace Task3Shop.ViewModels
             }
         }
 
+        [Required]
         public string DeliveryServiceName
         {
             get => _deliveyServiceName;
