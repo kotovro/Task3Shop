@@ -6,15 +6,18 @@ using System.Threading.Tasks;
 
 namespace Task3Shop.Models
 {
-    class DeliveryServiceAutomobileModel
+    class DeliveryServiceVehicle
     {
         int Speed { get;  }
-        Order order { get;  }
-        DeliveryServiceAutomobileModel(int speed, Order
+        Order Order { get; set; }
+
+
+        //Direc
+        DeliveryServiceVehicle(int speed, Order
             order)
         {
-            Speed = speed;
-            this.order = order;
+            this.Speed = speed;
+            this.Order = order;
         }
     }
 }

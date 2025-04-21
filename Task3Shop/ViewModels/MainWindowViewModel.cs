@@ -159,7 +159,7 @@ namespace Task3Shop.ViewModels
 
             if (GlobalCustomers.Count == 1)
             {
-                (Path customerImagePath, TextBlock text) = CreateCustomerImage(GlobalCustomers.First().Name, COLORS[0], scalefactor);
+                (Path customerImagePath, TextBlock text) = CreateCustomerImage(GlobalCustomers.First().Name, COLORS[1], scalefactor);
                 canvas.Children.Add(customerImagePath);
                 canvas.Children.Add(text);
 
@@ -178,8 +178,8 @@ namespace Task3Shop.ViewModels
                 return;
             }
 
-            double interlace = (canvas.Bounds.Width - marginLR * 2) / (GlobalCustomers.Count - 1);
-            int counter = 0;
+            double interlace = (canvas.Bounds.Width - marginLR * 2) / (GlobalCustomers.Count + 1);
+            int counter = 1;
             foreach (Customer customer in GlobalCustomers)
             {
                 (Path customerImagePath, TextBlock text) = CreateCustomerImage(customer.Name, COLORS[counter % COLORS.Length], scalefactor);
@@ -224,8 +224,8 @@ namespace Task3Shop.ViewModels
             var pathForShop = Geometry.Parse(SHOPIMAGE);
 
 
-            double marginTop =  pathForCustomer.Bounds.Height * scalefactor + pathForCustomer.Bounds.Height * scalefactor / 2 + tmpText.Bounds.Height;
-            double marginBottom = pathForShop.Bounds.Height * scalefactor + pathForShop.Bounds.Height * scalefactor / 2 + tmpText.Bounds.Height;
+            double marginTop =  (pathForCustomer.Bounds.Height * scalefactor + pathForCustomer.Bounds.Height * scalefactor / 2 + tmpText.Bounds.Height) / 2;
+            double marginBottom = (pathForShop.Bounds.Height * scalefactor + pathForShop.Bounds.Height * scalefactor / 2 + tmpText.Bounds.Height) / 2;
 
 
             var bounds = path.Bounds;
@@ -238,7 +238,7 @@ namespace Task3Shop.ViewModels
 
             if (GlobalDeliveryServices.Count == 1)
             {
-                (Path deliveryServiceImagePath, TextBlock text) = CreateDeliveryServiceImage(GlobalDeliveryServices.First().ServiceName, COLORS[0], scalefactor);
+                (Path deliveryServiceImagePath, TextBlock text) = CreateDeliveryServiceImage(GlobalDeliveryServices.First().ServiceName, COLORS[1], scalefactor);
                 canvas.Children.Add(deliveryServiceImagePath);
                 canvas.Children.Add(text);
 
@@ -259,7 +259,7 @@ namespace Task3Shop.ViewModels
                 return;
             }
 
-            double interlace = (canvas.Bounds.Height - marginTB * 2 - marginTop - marginBottom) / (GlobalDeliveryServices.Count - 1);
+            double interlace = (canvas.Bounds.Height - marginTB * 2 - marginTop - marginBottom) / (GlobalDeliveryServices.Count);
             int counter = 0;
             foreach (DeliveryService service in GlobalDeliveryServices)
             {
@@ -271,13 +271,13 @@ namespace Task3Shop.ViewModels
                 text.MaxWidth = itemWidth * 2;
                 text.Arrange(new Rect(text.DesiredSize));
 
-                double pictureTopY = marginTop + marginTB + interlace * counter - (itemHeight + marginTB + text.Bounds.Height) / (GlobalDeliveryServices.Count - 1) * counter - bounds.Height / 2 + bounds.Height * scalefactor / 2;
+                double pictureTopY = marginTop + marginTB + interlace / 2 + interlace * counter - (itemHeight + marginTB + text.Bounds.Height) / (GlobalDeliveryServices.Count) * counter - bounds.Height / 2 + bounds.Height * scalefactor / 2;
                 
                 Canvas.SetTop(serviceImagePath, pictureTopY);
                 Canvas.SetLeft(serviceImagePath, marginLR - itemWidth / 2 - bounds.Right / 2 + bounds.Right * scalefactor / 2);
 
                 Canvas.SetLeft(text, marginLR - text.Bounds.Right / 2);
-                Canvas.SetTop(text, marginTop + marginTB + interlace * counter - (itemHeight + marginTB + text.Bounds.Height) / (GlobalDeliveryServices.Count - 1) * counter + itemHeight + marginTB);
+                Canvas.SetTop(text, marginTop + marginTB + interlace / 2 + interlace * counter - (itemHeight + marginTB + text.Bounds.Height) / (GlobalDeliveryServices.Count) * counter + itemHeight + marginTB);
 
                 counter++;
             }
@@ -299,7 +299,7 @@ namespace Task3Shop.ViewModels
 
             if (GlobalShops.Count == 1)
             {
-                (Path shopImagePath, TextBlock text) = CreateShopImage(GlobalShops.First().Name, COLORS[0], scalefactor);
+                (Path shopImagePath, TextBlock text) = CreateShopImage(GlobalShops.First().Name, COLORS[1], scalefactor);
                 canvas.Children.Add(shopImagePath);
                 canvas.Children.Add(text);
 
@@ -317,8 +317,8 @@ namespace Task3Shop.ViewModels
                 return;
             }
 
-            double interlace = (canvas.Bounds.Width - marginLR * 2) / (GlobalShops.Count - 1);
-            int counter = 0;
+            double interlace = (canvas.Bounds.Width - marginLR * 2) / (GlobalShops.Count + 1);
+            int counter = 1;
             foreach (Shop shop in GlobalShops)
             {
                 (Path shopImagePath, TextBlock text) = CreateShopImage(shop.Name, COLORS[counter % COLORS.Length], scalefactor);

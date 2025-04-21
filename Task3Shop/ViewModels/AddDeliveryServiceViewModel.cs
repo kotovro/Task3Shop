@@ -28,9 +28,9 @@ namespace Task3Shop.ViewModels
                 var isNameValid = !string.IsNullOrWhiteSpace(DeliveryServiceName) &&
                        !(mainWindowViewModel?.GlobalDeliveryServices?.Any(deliveryService =>
                            deliveryService.ServiceName.Equals(DeliveryServiceName, StringComparison.OrdinalIgnoreCase)) ?? false);
+                var isCarAmountValid = TotalCars > 0;
 
-
-                return isNameValid;
+                return isNameValid && isCarAmountValid;
 
             }
         }
