@@ -8,7 +8,7 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
 		Width="800" 
-		Height="450"
+		Height="500"
         Title="Task3Shop">
 
 	<Grid>
@@ -26,7 +26,7 @@
 		<!--Place buttons in line, and not in column!-->
 		<StackPanel Orientation="Horizontal" Grid.Row="1">
 			<Button Content="Add product" Command="{Binding AddGood}" Margin="10,10,10,10" />
-			<Button Content="Add shop" Command="{Binding AddShop}" Margin="10,10,10,10" />
+			<Button Content="Add shop" Command="{Binding AddShop}" IsEnabled="{Binding IsAnyGoodAdded}" Margin="10,10,10,10" />
 			<Button Content="Add customer" Command="{Binding AddCustomer}" Margin="10,10,10,10"/>
 			<Button Content="Add delivery service" Command="{Binding AddDeliveryService}" Margin="10,10,10,10"/>
 		</StackPanel>

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Task3Shop.Models;
 using Task3Shop.Views;
@@ -16,8 +17,10 @@ namespace Task3Shop.ViewModels
         private Window _mainWindow = mainWindow;
         private Window _thisWindow = thisWindow;
 
+
+
         private string _deliveyServiceName;
-        private int _totalCars;
+        private string _totalCars;
 
         
         public bool CanConfirm
@@ -28,7 +31,9 @@ namespace Task3Shop.ViewModels
                 var isNameValid = !string.IsNullOrWhiteSpace(DeliveryServiceName) &&
                        !(mainWindowViewModel?.GlobalDeliveryServices?.Any(deliveryService =>
                            deliveryService.ServiceName.Equals(DeliveryServiceName, StringComparison.OrdinalIgnoreCase)) ?? false);
-                var isCarAmountValid = TotalCars > 0;
+                var regexPattern = @"^[1-9]\d{0,4}$";
+
+                var isCarAmountValid = Regex.IsMatch(TotalCars, regexPattern);
 
                 return isNameValid && isCarAmountValid;
 
@@ -47,7 +52,7 @@ namespace Task3Shop.ViewModels
         }
 
         [Required]
-        public int TotalCars
+        public string TotalCars
         {
             get => _totalCars;
             set
@@ -62,9 +67,10 @@ namespace Task3Shop.ViewModels
             if (CanConfirm)
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
-                mainWindowViewModel.GlobalDeliveryServices.Add(new DeliveryService(TotalCars, DeliveryServiceName));
-                _thisWindow.Close();
-                mainWindowViewModel.RedrawCanvas();
+                if (Int32.TryParse(TotalCars, out int count))
+                    mainWindowViewModel.GlobalDeliveryServices.Add(new DeliveryService(count, DeliveryServiceName));
+                    _thisWindow.Close();
+                    mainWindowViewModel.RedrawCanvas();
             }
         }
     }

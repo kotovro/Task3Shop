@@ -47,6 +47,7 @@ namespace Task3Shop.ViewModels
             { 
               var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel; 
               mainWindowViewModel.GlobalGoods.Add(new Good(GoodName));
+              mainWindowViewModel.IsAnyGoodAdded = true;
                 _thisWindow.Close();
             }
         }

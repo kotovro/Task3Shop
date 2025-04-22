@@ -29,8 +29,9 @@ namespace Task3Shop.ViewModels
                 var isAddressValid = !string.IsNullOrWhiteSpace(ShopAddress) &&
                        (mainWindowViewModel?.GlobalShops?.Any(shop =>
                            shop.Address.Equals(ShopAddress, StringComparison.OrdinalIgnoreCase)) == false);
-                
-                return isAddressValid && isNameValid;
+
+                var IsAnyProductAdded = mainWindowViewModel.GlobalGoods.Count > 0;
+                return isAddressValid && isNameValid && IsAnyProductAdded;
                
             }
         }

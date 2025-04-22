@@ -21,8 +21,24 @@ using System.Xml.Linq;
 
 namespace Task3Shop.ViewModels
 {
+
+
     public partial class MainWindowViewModel : ViewModelBase
     {
+        //private double _windowWidth;
+        //public double WindowWidth
+        //{
+        //    get => _windowWidth;
+        //    set => this.RaiseAndSetIfChanged(ref _windowWidth, value);
+        //}
+
+        //private double _windowHeight;
+        //public double WindowHeight
+        //{
+        //    get => _windowHeight;
+        //    set => this.RaiseAndSetIfChanged(ref _windowHeight, value);
+        //}
+
 
         public const string SHOPIMAGE = "M36.8 192l566.3 0c20.3 0 36.8-16.5 36.8-36.8c0-7.3-2.2-14.4-6.2-20.4L558.2 21.4C549.3 8 534.4 0 518.3 0L121.7 0c-16 0-31 8-39.9 21.4L6.2 134.7c-4 6.1-6.2 13.2-6.2 20.4C0 175.5 16.5 192 36.8 192zM64 224l0 160 0 80c0 26.5 21.5 48 48 48l224 0c26.5 0 48-21.5 48-48l0-80 0-160-64 0 0 160-192 0 0-160-64 0zm448 0l0 256c0 17.7 14.3 32 32 32s32-14.3 32-32l0-256-64 0z";
         public const string CUSTOMERIMAGE = "M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z";
@@ -43,14 +59,14 @@ namespace Task3Shop.ViewModels
             new MakeNewOrderAnywhereStrategy(),
             new MakeNewOrderHereStrategy()
         ]; 
-        private Image _image;
-        private double _x = 0;
         public SynchronizedCollection<Good>? GlobalGoods { get; } = new();
         public SynchronizedCollection<Shop>? GlobalShops { get; } = new();
         public SynchronizedCollection<Customer>? GlobalCustomers { get; } = new();
         public SynchronizedCollection<DeliveryService>? GlobalDeliveryServices { get; } = new();
 
         private readonly Window _mainWindow;
+
+        public bool IsAnyGoodAdded { get; set;  } = false;
         public  async void AddGood()
         {
             var addGoodWindow = new AddGoodWindow();
@@ -58,6 +74,7 @@ namespace Task3Shop.ViewModels
             addGoodWindow.DataContext = goodFormVM;
 
             await addGoodWindow.ShowDialog(_mainWindow);
+            this.RaisePropertyChanged(nameof(IsAnyGoodAdded));
         }
         public async void AddShop()
         {
@@ -367,18 +384,11 @@ namespace Task3Shop.ViewModels
         public MainWindowViewModel(Window mainWindow)
         {
             _mainWindow = mainWindow;
+            //this.WhenAnyValue(x => x.WindowWidth, x => x.WindowHeight).Subscribe(_ => RedrawCanvas());
         }
 
         private void OnFrame(object sender, EventArgs e)
         {
-            //_x += 2; // Move to the right
-            //Canvas.SetLeft(_image, _x);
-
-            //// Stop after moving off-screen
-            //if (_x > Bounds.Width)
-            //{
-            //    CompositionTarget.Rendering -= OnFrame;
-            //}
         }
 
         public string Greeting { get; } = "Welcome to Avalonia!";
