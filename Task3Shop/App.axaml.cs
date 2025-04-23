@@ -6,6 +6,9 @@ using System.Linq;
 using Avalonia.Markup.Xaml;
 using Task3Shop.ViewModels;
 using Task3Shop.Views;
+using ReactiveUI;
+using Splat;
+using Avalonia.ReactiveUI;
 
 namespace Task3Shop;
 
@@ -25,9 +28,7 @@ public partial class App : Application
             DisableAvaloniaDataAnnotationValidation();
             desktop.MainWindow = new MainWindow();
             desktop.MainWindow.DataContext = new MainWindowViewModel(desktop.MainWindow);
-            
         }
-
         base.OnFrameworkInitializationCompleted();
     }
 

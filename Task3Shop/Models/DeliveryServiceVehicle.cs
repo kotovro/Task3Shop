@@ -6,18 +6,24 @@ using System.Threading.Tasks;
 
 namespace Task3Shop.Models
 {
-    class DeliveryServiceVehicle
+    public class DeliveryServiceVehicle
     {
-        int Speed { get;  }
-        Order Order { get; set; }
+        public enum Direction 
+        {
+            ToBase = 0,
+            ToShop = 1,
+            ToClient = 2,
+        };
+
+        public Direction CurrentDirection { get; set; } = Direction.ToBase;
+        public int Distance { get; set; } 
+        public int Speed { get; private set; }
+        public Order Order { get; set; }
 
 
-        //Direc
-        DeliveryServiceVehicle(int speed, Order
-            order)
+        public DeliveryServiceVehicle(int speed)
         {
             this.Speed = speed;
-            this.Order = order;
         }
     }
 }

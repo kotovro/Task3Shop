@@ -12,10 +12,10 @@ namespace Task3Shop.Models
         public Good Good { get; }
 
         public Shop Shop { get;  }
-        public Order(Customer customer, Good order, Shop shop)
+        public Order(Customer customer, Good good, Shop shop)
         {
             this.Customer = customer;
-            this.Good = order;
+            this.Good = good;
             this.Shop = shop;
         }
     }

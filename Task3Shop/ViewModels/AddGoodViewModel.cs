@@ -49,6 +49,7 @@ namespace Task3Shop.ViewModels
               mainWindowViewModel.GlobalGoods.Add(new Good(GoodName));
               mainWindowViewModel.IsAnyGoodAdded = true;
                 _thisWindow.Close();
+
             }
         }
     }

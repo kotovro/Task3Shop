@@ -10,17 +10,18 @@ namespace Task3Shop.Models
     public class Shop
     {
         public event EventHandler<Order> OnOutOfStock;
-        public String Name { get; } = string.Empty;
-        public String Address { get; } = string.Empty;
+        public string Name { get; } = string.Empty;
+        public string Address { get; } = string.Empty;
 
         public Dictionary<Good, int> Stock { get; set; }
 
         public SynchronizedCollection<DeliveryService> deliveryServices { get; set; }
 
-        public Shop(string name, string address)
+        public Shop(string name, string address, SynchronizedCollection<DeliveryService> deliveries)
         {
             Name = name;
             Address = address;
+            deliveryServices = deliveries;
         }
 
         public bool GetOrderFromStock(Order order)
@@ -33,6 +34,7 @@ namespace Task3Shop.Models
                     return true;
                 }
             }
+            order.Customer.OutOfStockListener(order);
             OnOutOfStock.Invoke(this, order);
             return false;
         }
@@ -42,11 +44,8 @@ namespace Task3Shop.Models
             return Stock[good] > 0;
         }
 
-        public void MakeOrderListener(object? sender, Order order)
+        public void MakeOrderListener(Order order)
         {
-            if (order.Shop != this)
-                return;
-
             List<DeliveryService> shuffledServices = Toolkit.GetShuffledList(deliveryServices);
             foreach (DeliveryService svc in shuffledServices)
             {

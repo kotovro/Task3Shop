@@ -4,8 +4,24 @@
              xmlns:local="using:Task3Shop"
              RequestedThemeVariant="Light">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+	<!--
+	<Style Selector="ToastControl.Info">
+		<Setter Property="Background" Value="#1976D2"/>
+	</Style>
 
-    <Application.DataTemplates>
+	<Style Selector="ToastControl.Success">
+		<Setter Property="Background" Value="#388E3C"/>
+	</Style>
+
+	<Style Selector="ToastControl.Warning">
+		<Setter Property="Background" Value="#F57C00"/>
+	</Style>
+
+	<Style Selector="ToastControl.Error">
+		<Setter Property="Background" Value="#D32F2F"/>
+	</Style>
+	-->
+	<Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
   

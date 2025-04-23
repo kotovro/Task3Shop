@@ -61,17 +61,18 @@ namespace Task3Shop.ViewModels
             if (CanConfirm)
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
-                Shop temp = new Shop(ShopName, ShopAddress);
+                Shop temp = new Shop(ShopName, ShopAddress, mainWindowViewModel.GlobalDeliveryServices);
+                temp.OnOutOfStock += mainWindowViewModel.HandleOutOfStock;
                 FillStock(temp);
                 mainWindowViewModel.GlobalShops.Add(temp);
                 _thisWindow.Close();
                 mainWindowViewModel.RedrawCanvas();
+                mainWindowViewModel.RaisePropertyChanged(nameof(mainWindowViewModel.IsSimPossible));
             }
         }
 
         public void FillStock(Shop shop)
         {
-
             var stock = new Dictionary<Good, int>();
 
             var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
@@ -80,10 +81,6 @@ namespace Task3Shop.ViewModels
                 stock.Add(good, 10);
             }
 
-            foreach (Customer customer in mainWindowViewModel.GlobalCustomers)
-            {
-                customer.OnMakeOrder += shop.MakeOrderListener;
-            }
 
             shop.Stock = stock;
         }

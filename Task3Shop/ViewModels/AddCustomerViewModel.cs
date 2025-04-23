@@ -16,6 +16,7 @@ namespace Task3Shop.ViewModels
 
         private string _customerName;
         private string _customerAddress;
+       
 
         public bool CanConfirm
         {
@@ -28,6 +29,7 @@ namespace Task3Shop.ViewModels
                 var isAddressValid = !string.IsNullOrWhiteSpace(CustomerAddress) &&
                        !(mainWindowViewModel?.GlobalCustomers?.Any(customer =>
                            customer.Address.Equals(CustomerAddress, StringComparison.OrdinalIgnoreCase)) ?? false);
+                mainWindowViewModel.RaisePropertyChanged(nameof(mainWindowViewModel.IsSimPossible));
 
                 return isAddressValid && isNameValid;
 
@@ -63,11 +65,8 @@ namespace Task3Shop.ViewModels
                 var strategy = mainWindowViewModel.OutOfStockClientStrategies.ElementAt(random.Next(mainWindowViewModel.OutOfStockClientStrategies.Count));
                 var customer = new Customer(CustomerName, CustomerAddress, strategy, mainWindowViewModel.GlobalShops);
                 mainWindowViewModel.GlobalCustomers.Add(customer);
-                
-                foreach (Shop shop in mainWindowViewModel.GlobalShops)
-                {
-                    customer.OnMakeOrder += shop.MakeOrderListener;
-                }
+
+                customer.OnMakeOrder += mainWindowViewModel.HandleMakeOrder;
                 _thisWindow.Close();
                 mainWindowViewModel.RedrawCanvas();
             }

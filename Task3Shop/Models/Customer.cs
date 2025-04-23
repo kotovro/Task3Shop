@@ -25,11 +25,8 @@ namespace Task3Shop.Models
             this.ShopList = shopList;
         }
 
-        public void OutOfStockListener(object? sender, Order order)
+        public void OutOfStockListener(Order order)
         {
-            if (order.Customer != this)
-                return;
-
             (var good, var shop) = ClientStrategy.HandleOutOfStock(order, ShopList);
             if (shop != null)
             {
@@ -40,7 +37,7 @@ namespace Task3Shop.Models
         {
             Order order = new Order(this, good, shop);
             orders.Add(order);
-            order.Shop.OnOutOfStock += OutOfStockListener;
+            shop.MakeOrderListener(order);
             OnMakeOrder.Invoke(this, order);     
         }
     }

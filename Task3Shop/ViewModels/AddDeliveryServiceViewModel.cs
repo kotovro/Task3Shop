@@ -68,9 +68,10 @@ namespace Task3Shop.ViewModels
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
                 if (Int32.TryParse(TotalCars, out int count))
-                    mainWindowViewModel.GlobalDeliveryServices.Add(new DeliveryService(count, DeliveryServiceName));
+                    mainWindowViewModel.GlobalDeliveryServices.Add(new DeliveryService(count, DeliveryServiceName, 5));
                     _thisWindow.Close();
                     mainWindowViewModel.RedrawCanvas();
+                    mainWindowViewModel.RaisePropertyChanged(nameof(mainWindowViewModel.IsSimPossible));
             }
         }
     }

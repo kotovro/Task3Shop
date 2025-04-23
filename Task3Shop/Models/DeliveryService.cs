@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HarfBuzzSharp;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,27 +12,36 @@ namespace Task3Shop.Models
 {
     public class DeliveryService
     {
+        private const int DISTANCE = 20;
         public int TotalCars { get; }
-        public int AvailableCars { get; private set; }
         public string ServiceName { get; set; }
 
+        public List<DeliveryServiceVehicle> Vehicles = new ();
         private PriorityQueue<Order, int> DelayedDeliveries = new();
-        private SynchronizedCollection<Order> OrdersOnDelivery = new ();
         private Lock _locker = new ();
-
-        public void FinishDelivery(object shop, Order order)
+        public DeliveryService(int totalCars, string ServiceName, int speed)
         {
-            OrdersOnDelivery.Remove(order);
+            this.TotalCars = totalCars;
+            this.ServiceName = ServiceName;
+            for (int i = 0; i < TotalCars; i++)
+            {
+                Vehicles.Add(new DeliveryServiceVehicle(speed));
+            }
+        }
 
+        public void FinishDelivery(DeliveryServiceVehicle vehicle)
+        {
             lock (_locker)
             {
-                AvailableCars++;
+                vehicle.Order = null;
+                vehicle.CurrentDirection = DeliveryServiceVehicle.Direction.ToBase;
+                vehicle.Distance = GetDistanceToBase(vehicle);
             }
             if (DelayedDeliveries.Count > 0)
             {                
                 lock (DelayedDeliveries)
                 {
-                    order = (Order)DelayedDeliveries.Dequeue();
+                    Order order = (Order)DelayedDeliveries.Dequeue();
                     if (!RequestFastDelivery(order))
                     {
                         DelayedDeliveries.Enqueue(order, 0);
@@ -39,6 +49,10 @@ namespace Task3Shop.Models
                 }
             }
         }
+
+        private int GetDistanceToBase(DeliveryServiceVehicle vehicle) => DISTANCE;
+        private int GetDistanceToClient(DeliveryServiceVehicle vehicle) => DISTANCE;
+        private int GetDistanceToShop(DeliveryServiceVehicle vehicle) => DISTANCE;
 
         public void RequestLateDelivery(Order order)
         {
@@ -48,31 +62,30 @@ namespace Task3Shop.Models
         public bool RequestFastDelivery(Order order)
         {
 
-            if (AvailableCars <= 0)
+            if (!Vehicles.Any(v => v.Order == null))
             {
                 return false;
             }
 
             lock (_locker)
             {
-                AvailableCars--;
+                DeliveryServiceVehicle vehicle = Vehicles.First(v => v.Order == null);
+                vehicle.Order = order;
+                vehicle.CurrentDirection = DeliveryServiceVehicle.Direction.ToShop;
+                vehicle.Distance = GetDistanceToShop(vehicle);
             }
-
-            lock (OrdersOnDelivery.SyncRoot)
-            {
-                OrdersOnDelivery.Append(order);
-            }
-            
-            order.Shop.OnOutOfStock += FinishDelivery;
             return true;
         }
 
-        public DeliveryService(int totalCars, string ServiceName)
+        public void TakeGoodFromShop(DeliveryServiceVehicle vehicle)
         {
-            this.TotalCars = totalCars;
-            this.AvailableCars = totalCars;
-            this.ServiceName = ServiceName;
+            if (vehicle.Order.Shop.GetOrderFromStock(vehicle.Order))
+            {
+                vehicle.CurrentDirection = DeliveryServiceVehicle.Direction.ToClient;
+                vehicle.Distance = GetDistanceToClient(vehicle);
+            }
+            else
+               FinishDelivery(vehicle);
         }
-
     }
 }

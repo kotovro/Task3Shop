@@ -18,6 +18,12 @@ using Avalonia.Media;
 using Avalonia.Media.Immutable;
 using Avalonia;
 using System.Xml.Linq;
+using Splat;
+using Task3Shop.Toaster;
+using ToastNotificationAvalonia.Manager;
+using System.Threading;
+using CommunityToolkit.Mvvm.Input;
+using Avalonia.Threading;
 
 namespace Task3Shop.ViewModels
 {
@@ -25,24 +31,15 @@ namespace Task3Shop.ViewModels
 
     public partial class MainWindowViewModel : ViewModelBase
     {
-        //private double _windowWidth;
-        //public double WindowWidth
-        //{
-        //    get => _windowWidth;
-        //    set => this.RaiseAndSetIfChanged(ref _windowWidth, value);
-        //}
-
-        //private double _windowHeight;
-        //public double WindowHeight
-        //{
-        //    get => _windowHeight;
-        //    set => this.RaiseAndSetIfChanged(ref _windowHeight, value);
-        //}
-
-
         public const string SHOPIMAGE = "M36.8 192l566.3 0c20.3 0 36.8-16.5 36.8-36.8c0-7.3-2.2-14.4-6.2-20.4L558.2 21.4C549.3 8 534.4 0 518.3 0L121.7 0c-16 0-31 8-39.9 21.4L6.2 134.7c-4 6.1-6.2 13.2-6.2 20.4C0 175.5 16.5 192 36.8 192zM64 224l0 160 0 80c0 26.5 21.5 48 48 48l224 0c26.5 0 48-21.5 48-48l0-80 0-160-64 0 0 160-192 0 0-160-64 0zm448 0l0 256c0 17.7 14.3 32 32 32s32-14.3 32-32l0-256-64 0z";
         public const string CUSTOMERIMAGE = "M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z";
         public const string DELIVERYSERVICEIMAGE = "M0 488L0 171.3c0-26.2 15.9-49.7 40.2-59.4L308.1 4.8c7.6-3.1 16.1-3.1 23.8 0L599.8 111.9c24.3 9.7 40.2 33.3 40.2 59.4L640 488c0 13.3-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24l0-264c0-17.7-14.3-32-32-32l-384 0c-17.7 0-32 14.3-32 32l0 264c0 13.3-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24zm488 24l-336 0c-13.3 0-24-10.7-24-24l0-56 384 0 0 56c0 13.3-10.7 24-24 24zM128 400l0-64 384 0 0 64-384 0zm0-96l0-80 384 0 0 80-384 0z";
+
+        public string LogText { get; set; } = string.Empty;
+        private Simulation _simulation;
+        private CancellationTokenSource _cancellationTokenSource;
+        private bool _isSimPossible;
+        private bool _isSimStopPossible;
 
         public readonly IBrush[] COLORS = new IBrush[]
         { 
@@ -58,15 +55,71 @@ namespace Task3Shop.ViewModels
             new DontBuyAnythingStrategy(),
             new MakeNewOrderAnywhereStrategy(),
             new MakeNewOrderHereStrategy()
-        ]; 
-        public SynchronizedCollection<Good>? GlobalGoods { get; } = new();
-        public SynchronizedCollection<Shop>? GlobalShops { get; } = new();
-        public SynchronizedCollection<Customer>? GlobalCustomers { get; } = new();
-        public SynchronizedCollection<DeliveryService>? GlobalDeliveryServices { get; } = new();
+        ];
+
+        public SynchronizedCollection<Good> GlobalGoods { get; } = new();
+        private int _goodsCount = 0;
+        public SynchronizedCollection<Shop> GlobalShops { get; } = new();
+        private int _shopsCount = 0;
+        public SynchronizedCollection<Customer> GlobalCustomers { get; } = new();
+        private int _customersCount = 0;
+        public SynchronizedCollection<DeliveryService> GlobalDeliveryServices { get; } = new();
+        private int _deliveriesCount = 0;
+
+        public bool IsSimPossible
+        {
+            get
+            {
+                return GlobalCustomers.Count > 0 && GlobalShops.Count > 0 && GlobalDeliveryServices.Count > 0 && GlobalGoods.Count > 0;
+            }
+            set => _isSimPossible = value;
+        }
+
+        public bool IsSimStopPossible
+        {
+            get
+            {
+                return _isSimStopPossible;
+            }
+            set => _isSimPossible = value;
+        }
 
         private readonly Window _mainWindow;
 
         public bool IsAnyGoodAdded { get; set;  } = false;
+
+        
+        public MainWindowViewModel(Window mainWindow)
+        {
+            _mainWindow = mainWindow;
+            
+            _simulation = new Simulation();
+            _simulation.SimulationStepComplete += SimulationStepCompleteHandler;
+        }
+
+        public void RunSimulation()
+        {
+            _isSimStopPossible = true;
+            this.RaisePropertyChanged(nameof(IsSimStopPossible));
+            _isSimPossible = false;
+            this.RaisePropertyChanged(nameof(IsSimPossible));
+            _cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = _cancellationTokenSource.Token;
+            Task.Run(() =>
+            {
+               _simulation.DoSimulation(GlobalShops, GlobalCustomers, GlobalDeliveryServices, GlobalGoods, cancellationToken);
+            }, cancellationToken);
+        }
+
+        public async void StopSimulation()
+        {
+            _isSimStopPossible = false;
+            this.RaisePropertyChanged(nameof(IsSimStopPossible));
+            _isSimPossible = true;
+            this.RaisePropertyChanged(nameof(IsSimPossible));
+            _cancellationTokenSource.Cancel();
+        }
+
         public  async void AddGood()
         {
             var addGoodWindow = new AddGoodWindow();
@@ -75,6 +128,13 @@ namespace Task3Shop.ViewModels
 
             await addGoodWindow.ShowDialog(_mainWindow);
             this.RaisePropertyChanged(nameof(IsAnyGoodAdded));
+
+            if (_goodsCount < GlobalGoods.Count)
+            {
+                _goodsCount = GlobalGoods.Count;
+                LogText = $"{DateTime.Now} New good {GlobalGoods.Last().Name} added\n------\n" + LogText;
+                this.RaisePropertyChanged(nameof(LogText));
+            }
         }
         public async void AddShop()
         {
@@ -83,6 +143,13 @@ namespace Task3Shop.ViewModels
             addShopWindow.DataContext = shopFormVM;
 
             await addShopWindow.ShowDialog(_mainWindow);
+
+            if (_shopsCount < GlobalShops.Count)
+            {
+                _shopsCount = GlobalShops.Count;
+                LogText = $"{DateTime.Now} New shop {GlobalShops.Last().Name} added\n------\n" + LogText;
+                this.RaisePropertyChanged(nameof(LogText));
+            }
         }
 
         public async void AddCustomer()
@@ -92,6 +159,13 @@ namespace Task3Shop.ViewModels
             addCustomerWindow.DataContext = customerFormVM;
 
             await addCustomerWindow.ShowDialog(_mainWindow);
+
+            if (_customersCount < GlobalCustomers.Count)
+            {
+                _customersCount = GlobalCustomers.Count;
+                LogText = $"{DateTime.Now} New customer {GlobalCustomers.Last().Name} added\n------\n" + LogText;
+                this.RaisePropertyChanged(nameof(LogText));
+            }
         }
 
         public async void AddDeliveryService()
@@ -101,6 +175,24 @@ namespace Task3Shop.ViewModels
             addDeliveryServiceWindow.DataContext = deliveryFormVM;
 
             await addDeliveryServiceWindow.ShowDialog(_mainWindow);
+
+            if (_deliveriesCount < GlobalDeliveryServices.Count)
+            {
+                _deliveriesCount = GlobalDeliveryServices.Count;
+                LogText = $"{DateTime.Now} New delivery {GlobalDeliveryServices.Last().ServiceName} added\n------\n" + LogText;
+                this.RaisePropertyChanged(nameof(LogText));
+            }
+        }
+        
+        public void ShowLog()
+        {
+            var simulationLogWindow = new SimulationLogWindow();
+
+            simulationLogWindow.DataContext = _mainWindow.DataContext;
+
+            simulationLogWindow.Show();
+            //var simulationLogWindow = new SimulationLogWindow();
+
         }
 
         private (Path, TextBlock) CreateShopImage(string name, IBrush color, double scaleFactor)
@@ -381,18 +473,45 @@ namespace Task3Shop.ViewModels
         }
 
 
-        public MainWindowViewModel(Window mainWindow)
-        {
-            _mainWindow = mainWindow;
-            //this.WhenAnyValue(x => x.WindowWidth, x => x.WindowHeight).Subscribe(_ => RedrawCanvas());
-        }
+        
 
         private void OnFrame(object sender, EventArgs e)
         {
         }
 
-        public string Greeting { get; } = "Welcome to Avalonia!";
+        public async void HandleOutOfStock(object? sender, Order o)
+        {
+            //await ToastManager.ShowToastAsync(new Toast($"Out of stock!\nCustomer: {o.Customer.Name}\nGood: {o.Good.Name}\nShop: {o.Shop.Name} ", Brushes.Red));
+
+            LogText = $"{DateTime.Now} Out of stock!\nCustomer: {o.Customer.Name}\nGood: {o.Good.Name}\nShop: {o.Shop.Name}\n------\n" + LogText;
+            this.RaisePropertyChanged(nameof(LogText));
+
+            Dispatcher.UIThread.Post(() => ToastManager.ShowToastAsync(new Toast($"Out of stock!\nCustomer: {o.Customer.Name}\nGood: {o.Good.Name}\nShop: {o.Shop.Name} ", Brushes.Red)));
+        }
+
+        public async void HandleMakeOrder(object? sender, Order o)
+        {
+            LogText = $"{DateTime.Now} New order info:\nCustomer: {o.Customer.Name}\nGood: {o.Good.Name}\nShop: {o.Shop.Name}\n------\n" + LogText;
+            this.RaisePropertyChanged(nameof(LogText));
+
+            //await ToastManager.ShowToastAsync(new Toast($"New order info:\nCustomer: {o.Customer.Name}\nGood: {o.Good.Name}\nShop: {o.Shop.Name} ", Brushes.Green));
+
+            Dispatcher.UIThread.Post(() => ToastManager.ShowToastAsync(new Toast($"New order info:\nCustomer: {o.Customer.Name}\nGood: {o.Good.Name}\nShop: {o.Shop.Name} ", Brushes.Green)));
+        }
+        public async void SimulationStepCompleteHandler(object? sender, int step)
+        {
+            if (step % 10 == 0)
+            {
+                LogText = $"{DateTime.Now} Simulation step {step} complete\n------\n" + LogText;
+                this.RaisePropertyChanged(nameof(LogText));
+
+                //await ToastManager.ShowToastAsync(new Toast($"Simulation step {step} complete", Brushes.Blue));
+
+                //var result = Dispatcher.UIThread.InvokeAsync(() => new Toast($"Simulation step {step} complete", Brushes.Blue));
+                //await ToastManager.ShowToastAsync(result.Result);
+
+                Dispatcher.UIThread.Post(() => ToastManager.ShowToastAsync(new Toast($"Step {step} complete", Brushes.Blue)));
+            }
+        }
     }
-
-
 }
