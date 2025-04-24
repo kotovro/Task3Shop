@@ -35,6 +35,11 @@ namespace Task3Shop.Models
             return true;
         }
 
+        private bool IsNothingToDo(IEnumerable<Shop> shops, IEnumerable<DeliveryService> deliveryServices)
+        {
+            return !shops.Any(s => s.Stock.Any(kv => kv.Value > 0)) &&
+                !deliveryServices.Any(ds => ds.Vehicles.Any(v => v.Order != null));
+        }
         private async Task<bool> ServeVehicle(DeliveryServiceVehicle vehicle, DeliveryService deliveryService)
         {
             if (vehicle.Distance == 0)
@@ -47,6 +52,10 @@ namespace Task3Shop.Models
                 {
                     deliveryService.FinishDelivery(vehicle);
                 }
+                else 
+                {
+                    deliveryService.ReleaseVehicle(vehicle);
+                }
             }
             else
                 vehicle.Distance -= vehicle.Speed;
@@ -57,7 +66,7 @@ namespace Task3Shop.Models
         public async Task<bool> DoSimulation(IEnumerable<Shop> shops, IEnumerable<Customer> customers, IEnumerable<DeliveryService> deliveryServices, IEnumerable<Good> goods, CancellationToken ct)
         {
             int counter = 0;
-            while (shops.Any(s => s.Stock.Any(kv => kv.Value > 0)) && !ct.IsCancellationRequested)
+            while (!IsNothingToDo(shops, deliveryServices) && !ct.IsCancellationRequested)
             {
                 List<Task<bool>> tasks = new();
 
@@ -77,7 +86,7 @@ namespace Task3Shop.Models
                 Task.WaitAll(tasks);
 
                 SimulationStepComplete?.Invoke(this, counter++);
-                await Task.Delay(300, ct);
+                await Task.Delay(150, ct);
             }
             SimulationFinished?.Invoke(this, ct.IsCancellationRequested);
             return true;

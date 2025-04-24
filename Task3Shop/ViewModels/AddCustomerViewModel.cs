@@ -29,10 +29,8 @@ namespace Task3Shop.ViewModels
                 var isAddressValid = !string.IsNullOrWhiteSpace(CustomerAddress) &&
                        !(mainWindowViewModel?.GlobalCustomers?.Any(customer =>
                            customer.Address.Equals(CustomerAddress, StringComparison.OrdinalIgnoreCase)) ?? false);
-                mainWindowViewModel.RaisePropertyChanged(nameof(mainWindowViewModel.IsSimPossible));
 
                 return isAddressValid && isNameValid;
-
             }
         }
 
@@ -66,6 +64,7 @@ namespace Task3Shop.ViewModels
                 var customer = new Customer(CustomerName, CustomerAddress, strategy, mainWindowViewModel.GlobalShops);
 
                 mainWindowViewModel.GlobalCustomers.Add(customer);
+                mainWindowViewModel.RaisePropertyChanged(nameof(mainWindowViewModel.IsSimPossible));
                 mainWindowViewModel.RedrawCanvas();
                 mainWindowViewModel.LogText = $"{DateTime.Now} New customer {customer.Name} added\n------\n" + mainWindowViewModel.LogText;
                 mainWindowViewModel.RaisePropertyChanged(nameof(mainWindowViewModel.LogText));

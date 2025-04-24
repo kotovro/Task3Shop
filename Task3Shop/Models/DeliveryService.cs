@@ -35,17 +35,11 @@ namespace Task3Shop.Models
             }
         }
 
-        public void FinishDelivery(DeliveryServiceVehicle vehicle)
+        public void ReleaseVehicle(DeliveryServiceVehicle vehicle)
         {
-            lock (_locker)
-            {
-                OnOrderDeliveryFinished?.Invoke(this, vehicle.Order);
-                vehicle.Order = null;
-                vehicle.CurrentDirection = DeliveryServiceVehicle.Direction.ToBase;
-                vehicle.Distance = GetDistanceToBase(vehicle);
-            }
+            vehicle.Order = null;
             if (DelayedDeliveries.Count > 0)
-            {                
+            {
                 lock (DelayedDeliveries)
                 {
                     Order order = (Order)DelayedDeliveries.Dequeue();
@@ -57,9 +51,16 @@ namespace Task3Shop.Models
             }
         }
 
-        private int GetDistanceToBase(DeliveryServiceVehicle vehicle) => DISTANCE;
-        private int GetDistanceToClient(DeliveryServiceVehicle vehicle) => DISTANCE;
-        private int GetDistanceToShop(DeliveryServiceVehicle vehicle) => DISTANCE;
+        public void FinishDelivery(DeliveryServiceVehicle vehicle)
+        {
+            OnOrderDeliveryFinished?.Invoke(this, vehicle.Order);
+            vehicle.CurrentDirection = DeliveryServiceVehicle.Direction.ToBase;
+            vehicle.Distance = GetDistanceToBase(vehicle);
+        }
+
+        public int GetDistanceToBase(DeliveryServiceVehicle vehicle) => DISTANCE;
+        public int GetDistanceToClient(DeliveryServiceVehicle vehicle) => DISTANCE;
+        public int GetDistanceToShop(DeliveryServiceVehicle vehicle) => DISTANCE;
 
         public void RequestLateDelivery(Order order)
         {

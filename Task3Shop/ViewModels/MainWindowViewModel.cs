@@ -1,73 +1,90 @@
 ﻿using Avalonia.Controls;
 using ReactiveUI;
-using System.Linq;
 using System.Threading.Tasks;
 using Task3Shop.Models;
 using Task3Shop.Views;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Avalonia.Controls.Shapes;
 using Avalonia.Media;
-using Avalonia;
 using Task3Shop.Toaster;
 using ToastNotificationAvalonia.Manager;
 using System.Threading;
 using Avalonia.Threading;
-using Avalonia.Data.Converters;
-using Avalonia.Animation;
-using Task3Shop.Tools;
-using Avalonia.Controls.Templates;
 
 namespace Task3Shop.ViewModels
 {
-
-
     public partial class MainWindowViewModel : ReactiveObject
     {
+        private readonly Window _mainWindow;
         private Simulation _simulation;
         private CancellationTokenSource _cancellationTokenSource;
         private bool _isSimPausePossible;
         private int _currentStep = 0;
+        private Tools.Animation _animation;
         public bool IsLogEnabled { get; set; } = true;
         public string LogText { get; set; } = string.Empty;
-
-
-        public List<IOutOfStockClientStrategy> OutOfStockClientStrategies = [
-            new DontBuyAnythingStrategy(),
-            new MakeNewOrderAnywhereStrategy(),
-            new MakeNewOrderHereStrategy()
-        ];
-
-        public ConcurrentBag<Good> GlobalGoods { get; } = new();
-        public ConcurrentBag<Shop> GlobalShops { get; } = new();
-        public ConcurrentBag<Customer> GlobalCustomers { get; } = new();
-        public ConcurrentBag<DeliveryService> GlobalDeliveryServices { get; } = new();
-
         public bool IsSimPossible
         {
-            get => GlobalCustomers.Count > 0 && GlobalShops.Count > 0 && GlobalDeliveryServices.Count > 0 && GlobalGoods.Count > 0 && !_isSimPausePossible;
+            get => GlobalCustomers.Count > 0 && GlobalShops.Count > 0 && GlobalDeliveryServices.Count > 0 && !_isSimPausePossible;
         }
 
         public bool IsSimPausePossible
         {
             get => _isSimPausePossible;
         }
+        public bool IsAnyGoodAdded { get; set; } = false;
 
-        private readonly Window _mainWindow;
+        public ConcurrentBag<Good> GlobalGoods { get; } = new();
+        public ConcurrentBag<Shop> GlobalShops { get; } = new();
+        public ConcurrentBag<Customer> GlobalCustomers { get; } = new();
+        public ConcurrentBag<DeliveryService> GlobalDeliveryServices { get; } = new();
 
-        public bool IsAnyGoodAdded { get; set;  } = false;
-
-        
+        public List<IOutOfStockClientStrategy> OutOfStockClientStrategies = [
+            new DontBuyAnythingStrategy(),
+            new MakeNewOrderAnywhereStrategy(),
+            new MakeNewOrderHereStrategy()
+        ];
         public MainWindowViewModel(Window mainWindow)
         {
             _mainWindow = mainWindow;
+            _mainWindow.Resized += (sender, args) => RedrawCanvas();
             
             _simulation = new Simulation();
             _simulation.SimulationStepComplete += SimulationStepCompleteHandler;
             _simulation.SimulationFinished += SimulationFinishedHandler;
-        }
 
+            _animation = new Tools.Animation(GlobalShops, GlobalCustomers, GlobalDeliveryServices);
+        }
+        public void ShowLog()
+        {
+            var simulationLogWindow = new SimulationLogWindow();
+            simulationLogWindow.Closed += (sender, args) => { IsLogEnabled = true; this.RaisePropertyChanged(nameof(IsLogEnabled)); };
+            simulationLogWindow.DataContext = _mainWindow.DataContext;
+
+            IsLogEnabled = false;
+            this.RaisePropertyChanged(nameof(IsLogEnabled));
+            simulationLogWindow.Show(_mainWindow);
+        }
+        public void RedrawCanvas()
+        {
+            var scaleFactor = 0.05;
+            Canvas canvas = _mainWindow.FindControl<Canvas>("Canvas");
+            canvas.Children.Clear();
+            if (GlobalShops.Count > 0)
+            {
+                _animation.DrawAllShops(canvas, scaleFactor);
+            }
+            if (GlobalCustomers.Count > 0)
+            {
+                _animation.DrawAllCustomers(canvas, scaleFactor);
+            }
+            if (GlobalDeliveryServices.Count > 0)
+            {
+                _animation.DrawAllDeliveryServices(canvas, scaleFactor);
+                _animation.DrawAllVehicles(canvas, scaleFactor);
+            }
+        }
         public void RunSimulation()
         {
             _isSimPausePossible = true;
@@ -128,34 +145,7 @@ namespace Task3Shop.ViewModels
             await addDeliveryServiceWindow.ShowDialog(_mainWindow);
         }
         #endregion
-        public void ShowLog()
-        {
-            var simulationLogWindow = new SimulationLogWindow();
-            simulationLogWindow.Closed += (sender, args) => { IsLogEnabled = true; this.RaisePropertyChanged(nameof(IsLogEnabled)); };
-            simulationLogWindow.DataContext = _mainWindow.DataContext;
 
-            IsLogEnabled = false;
-            this.RaisePropertyChanged(nameof(IsLogEnabled));
-            simulationLogWindow.Show(_mainWindow);
-        }
-        public void RedrawCanvas()
-        {
-            var scaleFactor = 0.05;
-            Canvas canvas = _mainWindow.FindControl<Canvas>("Canvas");
-            canvas.Children.Clear();
-            if (GlobalShops.Count > 0)
-            {
-                Tools.Animation.DrawAllShops(canvas, scaleFactor, GlobalShops);
-            }
-            if (GlobalCustomers.Count > 0)
-            {
-                Tools.Animation.DrawAllCustomers(canvas, scaleFactor, GlobalCustomers);
-            }
-            if (GlobalDeliveryServices.Count > 0)
-            {
-                Tools.Animation.DrawAllDeliveryServices(canvas, scaleFactor, GlobalDeliveryServices);
-            }
-        }
         #region Event handlers
         private void OnFrame(object sender, EventArgs e)
         {
@@ -218,12 +208,17 @@ namespace Task3Shop.ViewModels
 
                 Dispatcher.UIThread.Post(() => ToastManager.ShowToastAsync(new Toast($"Step {_currentStep} complete", Brushes.DarkGray)));
             }
+            Dispatcher.UIThread.Post(() => RedrawCanvas());
         }
 
         public async void SimulationFinishedHandler(object? sender, bool isCancelled)
         {
             LogText = $"{DateTime.Now} Simulation {(isCancelled ? "paused" : "finished")}\n------\n" + LogText;
             this.RaisePropertyChanged(nameof(LogText));
+            _isSimPausePossible = false;
+            this.RaisePropertyChanged(nameof(IsSimPausePossible));
+            this.RaisePropertyChanged(nameof(IsSimPossible));
+
             _cancellationTokenSource.Dispose();
 
             Dispatcher.UIThread.Post(() => ToastManager.ShowToastAsync(new Toast($"Simulation {(isCancelled ? "paused" : "finished")}", Brushes.DarkGray)));

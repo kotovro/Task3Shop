@@ -69,7 +69,7 @@ namespace Task3Shop.ViewModels
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
                 if (Int32.TryParse(TotalCars, out int count))
                 {
-                    var ds = new DeliveryService(count, DeliveryServiceName, 5);
+                    var ds = new DeliveryService(count, DeliveryServiceName, 2);
                     mainWindowViewModel.GlobalDeliveryServices.Add(ds);
                     
                     mainWindowViewModel.RedrawCanvas();
