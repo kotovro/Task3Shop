@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -19,6 +20,11 @@ namespace Task3Shop.Models
         public List<DeliveryServiceVehicle> Vehicles = new ();
         private PriorityQueue<Order, int> DelayedDeliveries = new();
         private Lock _locker = new ();
+        public event EventHandler<Order> OnOrderTaken;
+        public event EventHandler<Order> OnOrderDeliveryFinished;
+        public event EventHandler<Order> OnOrderDeliveryStarted;
+        public event EventHandler<Order> OnOrderDeliveryScheduled;
+
         public DeliveryService(int totalCars, string ServiceName, int speed)
         {
             this.TotalCars = totalCars;
@@ -33,6 +39,7 @@ namespace Task3Shop.Models
         {
             lock (_locker)
             {
+                OnOrderDeliveryFinished?.Invoke(this, vehicle.Order);
                 vehicle.Order = null;
                 vehicle.CurrentDirection = DeliveryServiceVehicle.Direction.ToBase;
                 vehicle.Distance = GetDistanceToBase(vehicle);
@@ -56,7 +63,10 @@ namespace Task3Shop.Models
 
         public void RequestLateDelivery(Order order)
         {
-            DelayedDeliveries.Enqueue(order, 10);
+            lock (DelayedDeliveries)
+                DelayedDeliveries.Enqueue(order, 10);
+
+            OnOrderDeliveryScheduled?.Invoke(this, order);
         }
 
         public bool RequestFastDelivery(Order order)
@@ -73,6 +83,7 @@ namespace Task3Shop.Models
                 vehicle.Order = order;
                 vehicle.CurrentDirection = DeliveryServiceVehicle.Direction.ToShop;
                 vehicle.Distance = GetDistanceToShop(vehicle);
+                OnOrderDeliveryStarted?.Invoke(this, order);
             }
             return true;
         }
@@ -83,6 +94,7 @@ namespace Task3Shop.Models
             {
                 vehicle.CurrentDirection = DeliveryServiceVehicle.Direction.ToClient;
                 vehicle.Distance = GetDistanceToClient(vehicle);
+                OnOrderTaken?.Invoke(this, vehicle.Order);
             }
             else
                FinishDelivery(vehicle);

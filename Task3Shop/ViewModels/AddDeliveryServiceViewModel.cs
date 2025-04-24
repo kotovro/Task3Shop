@@ -12,7 +12,7 @@ using Task3Shop.Views;
 
 namespace Task3Shop.ViewModels
 {
-    public class AddDeliveryServiceViewModel(Window mainWindow, Window thisWindow) : ViewModelBase
+    public class AddDeliveryServiceViewModel(Window mainWindow, Window thisWindow) : ReactiveObject
     {
         private Window _mainWindow = mainWindow;
         private Window _thisWindow = thisWindow;
@@ -68,10 +68,23 @@ namespace Task3Shop.ViewModels
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
                 if (Int32.TryParse(TotalCars, out int count))
-                    mainWindowViewModel.GlobalDeliveryServices.Add(new DeliveryService(count, DeliveryServiceName, 5));
-                    _thisWindow.Close();
+                {
+                    var ds = new DeliveryService(count, DeliveryServiceName, 5);
+                    mainWindowViewModel.GlobalDeliveryServices.Add(ds);
+                    
                     mainWindowViewModel.RedrawCanvas();
                     mainWindowViewModel.RaisePropertyChanged(nameof(mainWindowViewModel.IsSimPossible));
+
+                    mainWindowViewModel.LogText = $"{DateTime.Now} New delivery {ds.ServiceName} added\n------\n" + mainWindowViewModel.LogText;
+                    mainWindowViewModel.RaisePropertyChanged(nameof(mainWindowViewModel.LogText));
+
+                    ds.OnOrderDeliveryFinished += mainWindowViewModel.HandleDeliveryFinished;
+                    ds.OnOrderDeliveryStarted += mainWindowViewModel.HandleDeliveyStarted;
+                    ds.OnOrderDeliveryScheduled += mainWindowViewModel.HandleDeliveryScheduled;
+                    ds.OnOrderTaken += mainWindowViewModel.HandleOrderTaken;
+
+                    _thisWindow.Close();
+                }
             }
         }
     }

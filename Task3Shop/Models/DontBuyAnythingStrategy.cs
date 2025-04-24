@@ -9,7 +9,7 @@ namespace Task3Shop.Models
 {
     class DontBuyAnythingStrategy : IOutOfStockClientStrategy
     {
-        public (Good, Shop?) HandleOutOfStock(Order order, SynchronizedCollection<Shop> shopsList)
+        public (Good, Shop?) HandleOutOfStock(Order order, IEnumerable<Shop> shopsList)
         {
             return (order.Good, null);
         }

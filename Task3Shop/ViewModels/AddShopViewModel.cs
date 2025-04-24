@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using ReactiveUI;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ using Task3Shop.Views;
 
 namespace Task3Shop.ViewModels
 {
-    public class AddShopViewModel(Window mainWindow, Window thisWindow) : ViewModelBase
+    public class AddShopViewModel(Window mainWindow, Window thisWindow) : ReactiveObject
     {
         private Window _mainWindow = mainWindow;
         private Window _thisWindow = thisWindow;
@@ -64,21 +65,25 @@ namespace Task3Shop.ViewModels
                 Shop temp = new Shop(ShopName, ShopAddress, mainWindowViewModel.GlobalDeliveryServices);
                 temp.OnOutOfStock += mainWindowViewModel.HandleOutOfStock;
                 FillStock(temp);
+
                 mainWindowViewModel.GlobalShops.Add(temp);
-                _thisWindow.Close();
                 mainWindowViewModel.RedrawCanvas();
                 mainWindowViewModel.RaisePropertyChanged(nameof(mainWindowViewModel.IsSimPossible));
+                mainWindowViewModel.LogText = $"{DateTime.Now} New shop {temp.Name} added\n------\n" + mainWindowViewModel.LogText;
+                mainWindowViewModel.RaisePropertyChanged(nameof(mainWindowViewModel.LogText));
+
+                _thisWindow.Close();
             }
         }
 
         public void FillStock(Shop shop)
         {
-            var stock = new Dictionary<Good, int>();
+            var stock = new ConcurrentDictionary<Good, int>();
 
             var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
             foreach (var good in mainWindowViewModel.GlobalGoods)
             {
-                stock.Add(good, 10);
+                stock.TryAdd(good, 10);
             }
 
 

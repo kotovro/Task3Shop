@@ -38,9 +38,9 @@
 			<Button Content="Add shop" Command="{Binding AddShop}" IsEnabled="{Binding IsAnyGoodAdded}" Margin="10,10,10,10" />
 			<Button Content="Add customer" Command="{Binding AddCustomer}" Margin="10,10,10,10"/>
 			<Button Content="Add delivery" Command="{Binding AddDeliveryService}" Margin="10,10,10,10"/>
-			<Button Content="Run simulation" Command="{Binding RunSimulation}" IsEnabled="{Binding IsSimPossible}" Margin="10,10,10,10"/>
-			<Button Content="Stop simulation" Command="{Binding StopSimulation}" IsEnabled="False" Margin="10,10,10,10"/>
-			<Button Content="Log" Command="{Binding ShowLog}" Margin="10,10,10,10"/>
+			<Button x:Name="RunButton" Content="Run" Command="{Binding RunSimulation}" IsEnabled="{Binding IsSimPossible}" Margin="10,10,10,10"/>
+			<Button Content="Pause" Command="{Binding StopSimulation}" IsEnabled="{Binding IsSimPausePossible}" Margin="10,10,10,10"/>
+			<Button Content="Log" Command="{Binding ShowLog}" IsEnabled="{Binding IsLogEnabled}" Margin="10,10,10,10"/>
 		</StackPanel>
 		<!--TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/-->
 	</Grid>

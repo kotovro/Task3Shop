@@ -9,6 +9,6 @@ namespace Task3Shop.Models
 {
     public interface IOutOfStockClientStrategy
     {
-        public (Good, Shop?) HandleOutOfStock(Order order, SynchronizedCollection<Shop> shopsList);
+        public (Good, Shop?) HandleOutOfStock(Order order, IEnumerable<Shop> shopsList);
     }
 }

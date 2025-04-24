@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Task3Shop.Tools;
 
 namespace Task3Shop.Models
 {
@@ -13,11 +14,11 @@ namespace Task3Shop.Models
         public string Name { get; } = string.Empty;
         public string Address { get; } = string.Empty;
 
-        public Dictionary<Good, int> Stock { get; set; }
+        public ConcurrentDictionary<Good, int> Stock { get; set; }
 
-        public SynchronizedCollection<DeliveryService> deliveryServices { get; set; }
+        public IEnumerable<DeliveryService> deliveryServices { get; set; }
 
-        public Shop(string name, string address, SynchronizedCollection<DeliveryService> deliveries)
+        public Shop(string name, string address, IEnumerable<DeliveryService> deliveries)
         {
             Name = name;
             Address = address;
@@ -26,25 +27,39 @@ namespace Task3Shop.Models
 
         public bool GetOrderFromStock(Order order)
         {
-            lock (Stock)
+            if (!Stock.ContainsKey(order.Good))
             {
-                if (IsGoodAvailable(order.Good))
-                {
-                    Stock[order.Good]--;
-                    return true;
-                }
+                order.Customer.OutOfStockListener(order);
+                OnOutOfStock?.Invoke(this, order);
+                return false;
             }
-            order.Customer.OutOfStockListener(order);
-            OnOutOfStock.Invoke(this, order);
-            return false;
+
+            int goodQuantity = Stock[order.Good];
+
+            if (goodQuantity <= 0)
+            {
+                order.Customer.OutOfStockListener(order);
+                OnOutOfStock?.Invoke(this, order);
+                return false;
+            }
+            else
+            {
+                if (Stock.TryUpdate(order.Good, goodQuantity - 1, goodQuantity))
+                    return true;
+                else
+                    return GetOrderFromStock(order);
+            }
         }
 
         public bool IsGoodAvailable(Good good)
         {
-            return Stock[good] > 0;
+            if (Stock.ContainsKey(good))
+                return Stock[good] > 0;
+            else
+                return false;
         }
 
-        public void MakeOrderListener(Order order)
+        public void MakeOrder(Order order)
         {
             List<DeliveryService> shuffledServices = Toolkit.GetShuffledList(deliveryServices);
             foreach (DeliveryService svc in shuffledServices)

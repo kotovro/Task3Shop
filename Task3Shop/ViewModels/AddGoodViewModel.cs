@@ -11,7 +11,7 @@ using Task3Shop.Models;
 
 namespace Task3Shop.ViewModels
 {
-    public class AddGoodViewModel(Window mainWindow, Window thisWindow) : ViewModelBase
+    public class AddGoodViewModel(Window mainWindow, Window thisWindow) : ReactiveObject
     {
         private Window _mainWindow = mainWindow;
         private Window _thisWindow = thisWindow;
@@ -42,14 +42,18 @@ namespace Task3Shop.ViewModels
         }
 
         public void Confirm() 
-        { 
-        if (CanConfirm) // Or canConfirm() if it's a method
-            { 
-              var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel; 
-              mainWindowViewModel.GlobalGoods.Add(new Good(GoodName));
-              mainWindowViewModel.IsAnyGoodAdded = true;
-                _thisWindow.Close();
+        {
+            if (CanConfirm) // Or canConfirm() if it's a method
+            {
+                var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
+                var good = new Good(GoodName);
+                mainWindowViewModel.GlobalGoods.Add(good);
+                mainWindowViewModel.IsAnyGoodAdded = true;
 
+                mainWindowViewModel.LogText = $"{DateTime.Now} New good {good.Name} added\n------\n" + mainWindowViewModel.LogText;
+                mainWindowViewModel.RaisePropertyChanged(nameof(mainWindowViewModel.LogText));
+
+                _thisWindow.Close();
             }
         }
     }

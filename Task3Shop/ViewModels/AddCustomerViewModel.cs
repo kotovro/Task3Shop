@@ -9,7 +9,7 @@ using Task3Shop.Models;
 
 namespace Task3Shop.ViewModels
 {
-    public class AddCustomerViewModel(Window mainWindow, Window thisWindow) : ViewModelBase
+    public class AddCustomerViewModel(Window mainWindow, Window thisWindow) : ReactiveObject
     {
         private Window _mainWindow = mainWindow;
         private Window _thisWindow = thisWindow;
@@ -64,11 +64,15 @@ namespace Task3Shop.ViewModels
                 var random = new Random();
                 var strategy = mainWindowViewModel.OutOfStockClientStrategies.ElementAt(random.Next(mainWindowViewModel.OutOfStockClientStrategies.Count));
                 var customer = new Customer(CustomerName, CustomerAddress, strategy, mainWindowViewModel.GlobalShops);
+
                 mainWindowViewModel.GlobalCustomers.Add(customer);
+                mainWindowViewModel.RedrawCanvas();
+                mainWindowViewModel.LogText = $"{DateTime.Now} New customer {customer.Name} added\n------\n" + mainWindowViewModel.LogText;
+                mainWindowViewModel.RaisePropertyChanged(nameof(mainWindowViewModel.LogText));
 
                 customer.OnMakeOrder += mainWindowViewModel.HandleMakeOrder;
                 _thisWindow.Close();
-                mainWindowViewModel.RedrawCanvas();
+
             }
         }
     }

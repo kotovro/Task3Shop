@@ -1,0 +1,18 @@
+<userControls:ToastControl xmlns="https://github.com/avaloniaui"
+                            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						    xmlns:vm="using:Task3Shop.Toaster"
+						    x:DataType="vm:Toast"
+                            xmlns:userControls="clr-namespace:ToastNotificationAvalonia.UserControls;assembly=ToastNotificationAvalonia"
+                            mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                            x:Class="Task3Shop.Toaster.Toast">
+    <Grid>
+        <Border  x:Name="ToastBody"  CornerRadius="12" BorderBrush="LightGray" BorderThickness="1"
+                Width="140" Height="80">
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
+                <TextBlock x:Name="ToastText" Foreground="White"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</userControls:ToastControl>
