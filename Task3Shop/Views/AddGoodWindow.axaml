@@ -6,7 +6,7 @@
         x:DataType="vm:AddGoodViewModel"
 		Title="Add Good"
 		Width="300"
-		Height="90"
+		Height="120"
 		CanResize="False">
 	<StackPanel Margin="10">
 		<TextBox Watermark="Enter product name" Text="{Binding GoodName}" />

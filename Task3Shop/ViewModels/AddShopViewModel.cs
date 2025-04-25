@@ -3,6 +3,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,6 @@ namespace Task3Shop.ViewModels
         private Window _thisWindow = thisWindow;
         
         private string _shopName;
-        private string _shopAddress;
 
         public bool CanConfirm
         {
@@ -27,16 +27,14 @@ namespace Task3Shop.ViewModels
                 var isNameValid = !string.IsNullOrWhiteSpace(ShopName) &&
                        (mainWindowViewModel?.GlobalShops?.Any(shop =>
                            shop.Name.Equals(ShopName, StringComparison.OrdinalIgnoreCase)) == false);
-                var isAddressValid = !string.IsNullOrWhiteSpace(ShopAddress) &&
-                       (mainWindowViewModel?.GlobalShops?.Any(shop =>
-                           shop.Address.Equals(ShopAddress, StringComparison.OrdinalIgnoreCase)) == false);
 
                 var IsAnyProductAdded = mainWindowViewModel.GlobalGoods.Count > 0;
-                return isAddressValid && isNameValid && IsAnyProductAdded;
+                return isNameValid && IsAnyProductAdded;
                
             }
         }
 
+        [Required]
         public string ShopName
         {
             get => _shopName;
@@ -47,22 +45,12 @@ namespace Task3Shop.ViewModels
             }
         }
 
-        public string ShopAddress
-        {
-            get => _shopAddress;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _shopAddress, value);
-                this.RaisePropertyChanged(nameof(CanConfirm));
-            }
-        }
-
         public void Confirm()
         {
             if (CanConfirm)
             {
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
-                Shop temp = new Shop(ShopName, ShopAddress, mainWindowViewModel.GlobalDeliveryServices);
+                Shop temp = new Shop(ShopName, mainWindowViewModel.GlobalDeliveryServices);
                 temp.OnOutOfStock += mainWindowViewModel.HandleOutOfStock;
                 FillStock(temp);
 

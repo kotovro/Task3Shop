@@ -110,7 +110,7 @@ namespace Task3Shop.ViewModels
             _cancellationTokenSource.Cancel();
         }
 
-        #region Add EEntities popupa
+        #region Add Entities
         public async void AddGood()
         {
             var addGoodWindow = new AddGoodWindow();

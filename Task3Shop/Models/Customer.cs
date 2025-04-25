@@ -24,6 +24,13 @@ namespace Task3Shop.Models
             this.ShopList = shopList;
         }
 
+        public Customer(string Name, IOutOfStockClientStrategy outOfStockClientStrategy, IEnumerable<Shop> shopList)
+        {
+            this.Name = Name;
+            this.ClientStrategy = outOfStockClientStrategy;
+            this.ShopList = shopList;
+        }
+
         public void OutOfStockListener(Order order)
         {
             (var good, var shop) = ClientStrategy.HandleOutOfStock(order, ShopList);

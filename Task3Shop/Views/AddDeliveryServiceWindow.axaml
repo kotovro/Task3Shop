@@ -5,7 +5,7 @@
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="250"
 		Width="400"
 		MaxWidth="400"
-		MaxHeight="250"
+		MaxHeight="200"
         xmlns:vm="using:Task3Shop.ViewModels"
 		x:Class="Task3Shop.Views.AddDeliveryServiceWindow"
         x:DataType="vm:AddDeliveryServiceViewModel"

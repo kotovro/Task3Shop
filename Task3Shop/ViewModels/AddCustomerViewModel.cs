@@ -1,7 +1,9 @@
 ﻿using Avalonia.Controls;
 using ReactiveUI;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +17,6 @@ namespace Task3Shop.ViewModels
         private Window _thisWindow = thisWindow;
 
         private string _customerName;
-        private string _customerAddress;
        
 
         public bool CanConfirm
@@ -26,30 +27,19 @@ namespace Task3Shop.ViewModels
                 var isNameValid = !string.IsNullOrWhiteSpace(CustomerName) &&
                        !(mainWindowViewModel?.GlobalCustomers?.Any(customer =>
                            customer.Name.Equals(CustomerName, StringComparison.OrdinalIgnoreCase)) ?? false);
-                var isAddressValid = !string.IsNullOrWhiteSpace(CustomerAddress) &&
-                       !(mainWindowViewModel?.GlobalCustomers?.Any(customer =>
-                           customer.Address.Equals(CustomerAddress, StringComparison.OrdinalIgnoreCase)) ?? false);
 
-                return isAddressValid && isNameValid;
+                return isNameValid;
             }
         }
 
+        [Required]
         public string CustomerName
         {
             get => _customerName;
             set
             {
-                this.RaiseAndSetIfChanged(ref _customerName, value);
-                this.RaisePropertyChanged(nameof(CanConfirm));
-            }
-        }
 
-        public string CustomerAddress
-        {
-            get => _customerAddress;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _customerAddress, value);
+                this.RaiseAndSetIfChanged(ref _customerName, value);
                 this.RaisePropertyChanged(nameof(CanConfirm));
             }
         }
@@ -61,7 +51,7 @@ namespace Task3Shop.ViewModels
                 var mainWindowViewModel = _mainWindow.DataContext as MainWindowViewModel;
                 var random = new Random();
                 var strategy = mainWindowViewModel.OutOfStockClientStrategies.ElementAt(random.Next(mainWindowViewModel.OutOfStockClientStrategies.Count));
-                var customer = new Customer(CustomerName, CustomerAddress, strategy, mainWindowViewModel.GlobalShops);
+                var customer = new Customer(CustomerName, strategy, mainWindowViewModel.GlobalShops);
 
                 mainWindowViewModel.GlobalCustomers.Add(customer);
                 mainWindowViewModel.RaisePropertyChanged(nameof(mainWindowViewModel.IsSimPossible));

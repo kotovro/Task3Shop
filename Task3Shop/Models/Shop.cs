@@ -25,6 +25,12 @@ namespace Task3Shop.Models
             deliveryServices = deliveries;
         }
 
+        public Shop(string name,  IEnumerable<DeliveryService> deliveries)
+        {
+            Name = name;
+            deliveryServices = deliveries;
+        }
+
         public bool GetOrderFromStock(Order order)
         {
             if (!Stock.ContainsKey(order.Good))
